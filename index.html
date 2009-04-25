@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+		<title>Map</title>
+		<style type="text/css">
+			html,body { margin:0; padding:0; border-style:none; position:absolute; top:0; left:0; height:100%; width:100%; color:#000; background:#fff; }
+			a { color:inherit; text-decoration:underline; }
+			#map { position:absolute; top:0; left:0; height:100%; width:100%; }
+			dl { margin:0; padding:0; }
+			dt { margin:0; padding:0; font-weight:bold; float:left; clear:left; }
+			dt:after { content:": "; }
+			dd { margin:0; padding:0; }
+
+			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; opacity:0.5; -moz-opacity:0.5; }
+			#search:hover { opacity:1; -moz-opacity:1; }
+			#search dt { display:none; }
+			#search dl,#search dd,#search div { display:inline; }
+			#search input { width:25em; }
+
+			#search-osm-cc { margin:0; padding:0; font-size:.8em; font-style:italic; opacity:.3; -moz-opacity:.3; }
+			#search:hover #search-osm-cc { opacity:1; -moz-opacity:1; }
+
+			.marker-heading { margin:0 0 .5em 0; padding:0; font-size:1.2em; font-weight:bold; }
+
+		</style>
+		<script type="text/javascript" src="http://www.openlayers.org/dev/OpenLayers.js"></script>
+		<script type="text/javascript" src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
+		<script type="text/javascript" src="http://opentiles.com/nop/opentiles.js"></script>
+		<script type="text/javascript" src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=euzuro-openlayers"></script>
+        <!--<script type="text/javascript" src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1'></script>-->
+		<script type="text/javascript" src="javascript.js"></script>
+	</head>
+	<body>
+		<div id="map"></div>
+		<form id="search" onsubmit="geoSearch(); return false;">
+			<dl>
+				<dt><label for="search-input">Search</label></dt>
+				<dd><input type="text" id="search-input" /></dd>
+			</dl>
+			<div><button type="submit" id="search-button">Search</button></div>
+			<p id="search-osm-cc">Search results from <a href="http://www.openstreetmap.org/">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa-2.0</a></p>
+		</form>
+		<script type="text/javascript">
+			initMap();
+		</script>
+	</body>
+</html>
