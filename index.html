@@ -57,6 +57,10 @@
 	<body>
 		<div id="map"></div>
 		<form id="search" action="" method="get" onsubmit="geoSearch(); return false;">
+		<!--
+			Add this form to your browser’s search keywords. Parameters from the URL Query String will automatically be moved to the Hash part.
+			For example http://osm.cdauth.de/map/?search=%s&layer=Osmarender will be redirected to http://osm.cdauth.de/map/#search=%s;layer=Osmarender.
+		-->
 			<dl>
 				<dt><label for="search-input">Search</label></dt>
 				<dd><input type="text" id="search-input" name="search" /></dd>
