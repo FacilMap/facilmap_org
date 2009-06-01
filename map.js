@@ -21,7 +21,6 @@
 var map;
 var layerMarkers;
 var layerResults;
-var OSMProjection = new OpenLayers.Projection("EPSG:900913");
 var lastHash;
 var newLocationHash;
 var icon;
