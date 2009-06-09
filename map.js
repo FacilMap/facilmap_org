@@ -53,6 +53,8 @@ function initMap()
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
 	map.addLayer(layerResults);
 
+	//init_openstreetbugs(map, "http://openstreetbugs.schokokeks.org/api/0.1/");
+
 	doUpdateLocationHash();
 	setInterval(doUpdateLocationHash, 500);
 
