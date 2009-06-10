@@ -47,7 +47,7 @@ function initMap()
 
 	map.addAllAvailableLayers();
 
-	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers", icon);
+	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
 
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
