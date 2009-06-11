@@ -49,6 +49,7 @@ function initMap()
 
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
+	layerMarkers.addClickControl();
 
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
 	map.addLayer(layerResults);
@@ -57,10 +58,6 @@ function initMap()
 
 	doUpdateLocationHash();
 	setInterval(doUpdateLocationHash, 500);
-
-	var click = new OpenLayers.Control.cdauth.MarkerClick(layerMarkers);
-	map.addControl(click);
-	click.activate();
 
 	map.events.register("move", map, updateLocationHash);
 	map.events.register("changebaselayer", map, updateLocationHash);
