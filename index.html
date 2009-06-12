@@ -36,8 +36,10 @@
 			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; opacity:0.5; -moz-opacity:0.5; z-index:100000; }
 			#search:hover { opacity:1; -moz-opacity:1; }
 			#search dt { display:none; }
-			#search dl,#search dd,#search div { display:inline; }
+			#search dl,#search dd,#search ul,#search li { display:inline; }
 			#search input { width:25em; }
+			#search ul { list-style-type:none; padding:0; margin:0; }
+			#search li { margin:0; padding:0; }
 
 			#search-osm-cc { margin:0; padding:0; font-size:.8em; font-style:italic; opacity:.3; -moz-opacity:.3; }
 			#search:hover #search-osm-cc { opacity:1; -moz-opacity:1; }
@@ -67,7 +69,10 @@
 				<dt><label for="search-input">Search</label></dt>
 				<dd><input type="text" id="search-input" name="search" /></dd>
 			</dl>
-			<div><button type="submit" id="search-button">Search</button></div>
+			<ul>
+				<li><button type="submit" id="search-button">Search</button></li>
+				<li><button id="search-button-reset" onclick="document.getElementById('search-input').value = ''; this.submit();">Reset</button></li>
+			</ul>
 			<p id="search-osm-cc">Search results from <a href="http://www.openstreetmap.org/">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa-2.0</a></p>
 		</form>
 		<script type="text/javascript">

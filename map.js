@@ -47,6 +47,8 @@ function initMap()
 
 	map.addAllAvailableLayers();
 
+	map.addLayer(new OpenLayers.Layer.cdauth.markers.OpenStreetBugs("OpenStreetBugs", "openstreetbugs.php", { visibility: false }));
+
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
 	layerMarkers.addClickControl();
@@ -58,23 +60,16 @@ function initMap()
 
 	doUpdateLocationHash();
 	setInterval(doUpdateLocationHash, 500);
+	map.events.register("newHash", map, updateLocationHash);
 
-	map.events.register("move", map, updateLocationHash);
-	map.events.register("changebaselayer", map, updateLocationHash);
-
-	layerMarkers.events.register("markerAdded", map, updateLocationHash);
-	layerMarkers.events.register("markerRemoved", map, updateLocationHash);
-
-	layerResults.events.register("lastSearchChange", map, updateLocationHash);
-	layerResults.events.register("markersChanged", map, updateLocationHash);
 	layerResults.events.register("searchBegin", map, function(){
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = true;
+		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
 	});
 	layerResults.events.register("searchSuccess", map, function(){
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = false;
+		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
 	layerResults.events.register("searchFailure", map, function(){
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = false;
+		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
 }
 
