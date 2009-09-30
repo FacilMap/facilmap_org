@@ -40,6 +40,7 @@ function initMap()
 		return;
 	}
 
+	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	map = new OpenLayers.Map.cdauth("map");
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -56,8 +57,6 @@ function initMap()
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
 	map.addLayer(layerResults);
 
-	//init_openstreetbugs(map, "http://openstreetbugs.schokokeks.org/api/0.1/");
-
 	doUpdateLocationHash();
 	setInterval(doUpdateLocationHash, 500);
 	map.events.register("newHash", map, updateLocationHash);
@@ -73,9 +72,58 @@ function initMap()
 	});
 }
 
-function geoSearch()
+function geoSearch(onlygpx)
 {
-	layerResults.geoSearch(document.getElementById("search-input").value);
+	var search = document.getElementById("search-input").value;
+
+	var gpx = false;
+	if(search.match(/^http:\/\//))
+	{
+		var m;
+		if(m = search.match(/[#?](.*)$/))
+		{
+			var query_string = decodeQueryString(m[1]);
+			if(typeof query_string.lon == "undefined" || typeof query_string.lat == "undefined")
+				gpx = true;
+		}
+		else
+			gpx = true;
+	}
+	else
+	{
+		var m = search.match(/^(node|way|relation|trace)\s*(\d+)$/i);
+		if(m)
+		{
+			gpx = true;
+			switch(m[1].toLowerCase())
+			{
+				case "node": search = "http://www.openstreetmap.org/api/0.6/node/"+m[2]; break;
+				case "way": search = "http://www.openstreetmap.org/api/0.6/way/"+m[2]+"/full"; break;
+				case "relation": search = "http://osm.cdauth.de/route-manager/gpx.php?relation="+m[2]; break;
+				case "trace": search = "http://www.openstreetmap.org/trace/"+m[2]+"/data"; break;
+			}
+		}
+	}
+
+	if(gpx)
+	{
+		layerResults.geoSearch("");
+
+		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
+		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true });
+		map.addLayer(layer);
+		layer.events.register("loadend", layer, function() {
+			if(!onlygpx)
+			{
+				var extent = this.getDataExtent();
+				if(extent)
+					map.zoomToExtent(extent);
+			}
+			document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
+		});
+	}
+	else if(!onlygpx)
+		layerResults.geoSearch(search);
 }
 
 function updateLocationHash()
@@ -89,6 +137,7 @@ function doUpdateLocationHash()
 	{
 		location.hash = "#"+encodeQueryString(map.getQueryObject(layerMarkers, layerResults));
 		lastHash = location.hash;
+		newLocationHash = false;
 	}
 	else
 	{
@@ -98,7 +147,10 @@ function doUpdateLocationHash()
 		{
 			var query_object = decodeQueryString(location.hash.replace(/^#/, ""));
 			if(typeof query_object.search != "undefined")
+			{
 				document.getElementById("search-input").value = query_object.search;
+				geoSearch(true);
+			}
 			map.zoomToQuery(query_object, layerMarkers, layerResults);
 		}
 	}

@@ -66,11 +66,11 @@
 		-->
 			<dl>
 				<dt><label for="search-input">Search</label></dt>
-				<dd><input type="text" id="search-input" name="search" /></dd>
+				<dd><input type="text" id="search-input" name="search" title="Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." /></dd>
 			</dl>
 			<ul>
 				<li><button type="submit" id="search-button">Search</button></li>
-				<li><button id="search-button-reset" onclick="document.getElementById('search-input').value = ''; this.submit();">Reset</button></li>
+				<li><button id="search-button-reset" onclick="document.getElementById('search-input').value = ''; this.form.onsubmit();">Clear</button></li>
 			</ul>
 			<p id="search-osm-cc">Search results from <a href="http://www.openstreetmap.org/">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa-2.0</a></p>
 		</form>
