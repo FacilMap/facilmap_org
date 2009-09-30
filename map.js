@@ -91,7 +91,7 @@ function geoSearch(onlygpx)
 	}
 	else
 	{
-		var m = search.match(/^(node|way|relation|trace)\s*(\d+)$/i);
+		var m = search.match(/^(node|way|relation|trace)\s*#?\s*(\d+)$/i);
 		if(m)
 		{
 			gpx = true;
