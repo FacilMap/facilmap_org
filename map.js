@@ -157,8 +157,13 @@ function doUpdateLocationHash()
 				{
 					delete query_object.search;
 					var i=0;
-					while(typeof query_object.xml[i] != "undefined")
-						i++;
+					if(query_object.xml)
+					{
+						while(typeof query_object.xml[i] != "undefined")
+							i++;
+					}
+					else
+						query_object.xml = { };
 					query_object.xml[i] = gpx_layer.cdauthURL;
 				}
 			}
