@@ -149,6 +149,7 @@ function doUpdateLocationHash()
 			if(typeof query_object.search != "undefined")
 			{
 				document.getElementById("search-input").value = query_object.search;
+				delete query_object.search;
 				geoSearch(true);
 			}
 			map.zoomToQuery(query_object, layerMarkers, layerResults);
