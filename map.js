@@ -121,9 +121,12 @@ function geoSearch(onlygpx)
 			}
 			document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 		});
+		return layer;
 	}
 	else if(!onlygpx)
 		layerResults.geoSearch(search);
+
+	return false;
 }
 
 function updateLocationHash()
@@ -149,8 +152,15 @@ function doUpdateLocationHash()
 			if(typeof query_object.search != "undefined")
 			{
 				document.getElementById("search-input").value = query_object.search;
-				delete query_object.search;
-				geoSearch(true);
+				var gpx_layer = geoSearch(true);
+				if(gpx_layer)
+				{
+					delete query_object.search;
+					var i=0;
+					while(typeof query_object.xml[i] != "undefined")
+						i++;
+					query_object.xml[i] = gpx_layer.cdauthURL;
+				}
 			}
 			map.zoomToQuery(query_object, layerMarkers, layerResults);
 		}
