@@ -72,7 +72,7 @@ function initMap()
 	});
 }
 
-function geoSearch(onlygpx)
+function geoSearch(onlygpx, dontzoomgpx)
 {
 	var search = document.getElementById("search-input").value;
 
@@ -113,7 +113,7 @@ function geoSearch(onlygpx)
 		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true });
 		map.addLayer(layer);
 		layer.events.register("loadend", layer, function() {
-			if(!onlygpx)
+			if(!dontzoomgpx)
 			{
 				var extent = this.getDataExtent();
 				if(extent)
@@ -152,7 +152,7 @@ function doUpdateLocationHash()
 			if(typeof query_object.search != "undefined")
 			{
 				document.getElementById("search-input").value = query_object.search;
-				var gpx_layer = geoSearch(true);
+				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
 				if(gpx_layer)
 				{
 					delete query_object.search;
