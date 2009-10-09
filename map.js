@@ -70,6 +70,21 @@ function initMap()
 	layerResults.events.register("searchFailure", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
+
+	var keyboardControl = null;
+	for(var i=0; i<map.controls.length; i++)
+	{
+		if(map.controls[i].CLASS_NAME == "OpenLayers.Control.KeyboardDefaults")
+		{
+			keyboardControl = map.controls[i];
+			break;
+		}
+	}
+	if(keyboardControl)
+	{
+		OpenLayers.Event.observe(document.getElementById("search-input"), "focus", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.deactivate() }, null));
+		OpenLayers.Event.observe(document.getElementById("search-input"), "blur", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.activate() }, null));
+	}
 }
 
 function geoSearch(onlygpx, dontzoomgpx)
