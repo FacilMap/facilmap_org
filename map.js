@@ -201,17 +201,3 @@ function doUpdateLocationHash()
 		}
 	}
 }
-
-/*
-var format;
-			if(string.match(/\.gpx$/i))
-				format = OpenLayers.Format.GPX;
-			else if(string.match(/\.gml$/i))
-				format = OpenLayers.Format.GML;
-			else if(string.match(/\.osm$/i))
-				format = OpenLayers.Format.OSM;
-			lastSearchLayer = new OpenLayers.Layer.GML("Geographic file", string, { format: format });
-			map.addLayer(lastSearchLayer);
-			if(!zoomback)
-				map.zoomToExtent(lastSearchLayer.getMaxExtent());
-*/
