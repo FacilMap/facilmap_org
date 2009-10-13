@@ -48,7 +48,12 @@ function initMap()
 
 	map.addAllAvailableLayers();
 
-	map.addLayer(new OpenLayers.Layer.cdauth.markers.OpenStreetBugs("OpenStreetBugs", "openstreetbugs.php", { visibility: false }));
+	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", true, { visibility: false });
+	map.addLayer(osb);
+
+	/*var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
+	map.addControl(osbControl);
+	osbControl.activate();*/
 
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
@@ -85,6 +90,9 @@ function initMap()
 		OpenLayers.Event.observe(document.getElementById("search-input"), "focus", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.deactivate() }, null));
 		OpenLayers.Event.observe(document.getElementById("search-input"), "blur", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.activate() }, null));
 	}
+
+	//makeShortCode(51.511, 0.055, 9);
+	//decodeShortLink("0EEQjE==");
 }
 
 function geoSearch(onlygpx, dontzoomgpx)
