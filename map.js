@@ -48,18 +48,26 @@ function initMap()
 
 	map.addAllAvailableLayers();
 
+	var toolbar = new OpenLayers.Control.Panel();
+	var moveControl = new OpenLayers.Control({ title : "Move map" });
+	map.addControl(moveControl);
+	toolbar.addControls(moveControl);
+	toolbar.defaultControl = moveControl;
+
 	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", true, { visibility: false });
 	map.addLayer(osb);
 
 	/*var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	map.addControl(osbControl);
-	osbControl.activate();*/
+	toolbar.addControls(osbControl);*/
 
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.createMarker(layerMarkers);
 	map.addControl(markerControl);
-	markerControl.activate();
+	toolbar.addControls(markerControl);
+
+	map.addControl(toolbar);
 
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
 	map.addLayer(layerResults);

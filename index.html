@@ -49,6 +49,16 @@
 			.marker-heading,.result-heading { margin:0 0 .5em 0; padding:0; font-size:1.2em; font-weight:bold; }
 			.result-heading { font-weight:normal; }
 			.result-heading a { font-size:.83em; }
+
+			.olControlPanel { position:absolute; top:1em; right:5%; border:.2em dotted #000; opacity:0.5; -moz-opacity:0.5; padding:.3em; background:#fff; }
+			.olControlPanel:hover { opacity:1; -moz-opacity:1; }
+
+			.olControlItemActive,.olControlItemInactive,.olControlOpenStreetBugsItemActive,.olControlOpenStreetBugsItemInactive,.olControlcdauthcreateMarkerItemActive,.olControlcdauthcreateMarkerItemInactive { height:25px; width:25px; background-repeat:no-repeat; background-position:center; float:left; padding:0 .2em; }
+			.olControlItemInactive,.olControlOpenStreetBugsItemInactive,.olControlcdauthcreateMarkerItemInactive { opacity:0.3; -moz-opacity:0.3; }
+
+			.olControlItemActive,.olControlItemInactive { background-image:url("move.png"); }
+			.olControlOpenStreetBugsItemActive,.olControlOpenStreetBugsItemInactive { background-image:url(http://openstreetbugs.schokokeks.org/client/icon_error_add.png); }
+			.olControlcdauthcreateMarkerItemActive,.olControlcdauthcreateMarkerItemInactive { background-image:url(marker.png); }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="cdauth’s map" />
 		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
