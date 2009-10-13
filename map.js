@@ -33,7 +33,7 @@ function initMap()
 	if(location.search.length > 1)
 	{ // Move query string to location hash part
 		var search_obj = decodeQueryString(location.search.substr(1));
-		var hash_obj = decodeQueryString(location.hash.substr(1));
+		var hash_obj = decodeQueryString(getLocationHash().substr(1));
 		for(var i in search_obj)
 			hash_obj[i] = search_obj[i];
 		location.replace(location.pathname+"#"+encodeQueryString(hash_obj));
@@ -149,21 +149,36 @@ function updateLocationHash()
 	newLocationHash = true;
 }
 
+/**
+ * At least in Firefox, location.hash contains “&” if the hash part contains “%26”. This makes searching for URLs (such as OSM PermaLinks) hard and we work around that problem by extracting the desired value from location.href.
+*/
+
+function getLocationHash()
+{
+	var match = location.href.match(/#(.*)$/);
+	if(match)
+		return match[1];
+	else
+		return "";
+}
+
 function doUpdateLocationHash()
 {
 	if(newLocationHash)
 	{
 		location.hash = "#"+encodeQueryString(map.getQueryObject(layerMarkers, layerResults));
-		lastHash = location.hash;
+		lastHash = getLocationHash();
 		newLocationHash = false;
 	}
 	else
 	{
-		var do_zoom = (location.hash != lastHash);
-		lastHash = location.hash;
+		var do_zoom = (getLocationHash() != lastHash);
+		lastHash = getLocationHash();
 		if(do_zoom)
 		{
-			var query_object = decodeQueryString(location.hash.replace(/^#/, ""));
+			var query_object = decodeQueryString(lastHash);
+			if(query_object.search == "%s")
+				delete query_object.search;
 			if(typeof query_object.search != "undefined")
 			{
 				document.getElementById("search-input").value = query_object.search;
