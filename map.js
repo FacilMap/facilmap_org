@@ -48,18 +48,30 @@ function initMap()
 
 	map.addAllAvailableLayers();
 
+	var activeTool = null;
+	var cookies = document.cookie.split(/;\s*/);
+	for(var i=0; i<cookies.length; i++)
+	{
+		var cookie = cookies[i].split("=");
+		if(cookie[0] == "cdauthTool")
+		{
+			activeTool = decodeURIComponent(cookie[1]);
+			break;
+		}
+	}
+
 	var toolbar = new OpenLayers.Control.Panel();
 	var moveControl = new OpenLayers.Control({ title : "Move map" });
 	map.addControl(moveControl);
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", true, { visibility: false });
+	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", false, { visibility: false });
 	map.addLayer(osb);
 
-	/*var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
+	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	map.addControl(osbControl);
-	toolbar.addControls(osbControl);*/
+	toolbar.addControls(osbControl);
 
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
@@ -68,6 +80,24 @@ function initMap()
 	toolbar.addControls(markerControl);
 
 	map.addControl(toolbar);
+	if(activeTool)
+	{
+		for(var i=0; i<toolbar.controls.length; i++)
+		{
+			if(toolbar.controls[i].title == activeTool)
+			{
+				toolbar.activateControl(toolbar.controls[i]);
+				break;
+			}
+		}
+	}
+
+	toolbar.activateControl = function(control) {
+		var ret = OpenLayers.Control.Panel.prototype.activateControl.apply(this, arguments);
+
+		document.cookie = "cdauthTool="+encodeURIComponent(control.title)+";expires="+(new Date((new Date()).getTime() + 86400000000)).toGMTString();
+		return ret;
+	};
 
 	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
 	map.addLayer(layerResults);
@@ -85,21 +115,6 @@ function initMap()
 	layerResults.events.register("searchFailure", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
-
-	var keyboardControl = null;
-	for(var i=0; i<map.controls.length; i++)
-	{
-		if(map.controls[i].CLASS_NAME == "OpenLayers.Control.KeyboardDefaults")
-		{
-			keyboardControl = map.controls[i];
-			break;
-		}
-	}
-	if(keyboardControl)
-	{
-		OpenLayers.Event.observe(document.getElementById("search-input"), "focus", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.deactivate() }, null));
-		OpenLayers.Event.observe(document.getElementById("search-input"), "blur", OpenLayers.Function.bindAsEventListener(function(e){ keyboardControl.activate() }, null));
-	}
 
 	//makeShortCode(51.511, 0.055, 9);
 	//decodeShortLink("0EEQjE==");
