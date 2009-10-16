@@ -18,6 +18,8 @@
 	or svn://svn.cdauth.de/tools/osm/map/.
 */
 
+// TODO: Also translate layer names (at the moment not possible due to the use of layer names in the URL hash part
+
 var map;
 var layerMarkers;
 var layerResults;
@@ -40,6 +42,54 @@ function initMap()
 		return;
 	}
 
+	var form_el = document.createElement("form");
+	form_el.method = "get";
+	form_el.action = "";
+	form_el.id = "search";
+	form_el.onsubmit = function(){ geoSearch(); return false; };
+	var el1,el2,el3;
+	el1 = document.createElement("dl");
+	el2 = document.createElement("dt");
+	el3 = document.createElement("label");
+	el3.htmlFor = "search-input";
+	el3.appendChild(document.createTextNode(OpenLayers.i18n("Search")));
+	el2.appendChild(el3);
+	el1.appendChild(el2);
+	el2 = document.createElement("dd");
+	el3 = document.createElement("input");
+	el3.type = "text";
+	el3.id = "search-input";
+	el3.name = "search";
+	el3.title = OpenLayers.i18n("Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.");
+	el2.appendChild(el3);
+	el1.appendChild(el2);
+	form_el.appendChild(el1);
+
+	el1 = document.createElement("ul");
+	el2 = document.createElement("li");
+	el3 = document.createElement("input");
+	el3.type = "submit";
+	el3.id = "search-button";
+	el3.value = OpenLayers.i18n("Search");
+	el2.appendChild(el3);
+	el1.appendChild(el2);
+	el2 = document.createElement("li");
+	el3 = document.createElement("input");
+	el3.type = "button";
+	el3.id = "search-button-reset";
+	el3.onclick = function(){ document.getElementsById("search-input").value = ""; this.form.onsubmit(); return false; };
+	el3.value = OpenLayers.i18n("Clear");
+	el2.appendChild(el3);
+	el1.appendChild(el2);
+	form_el.appendChild(el1);
+
+	el1 = document.createElement("p");
+	el1.id = "search-osm-cc";
+	el1.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
+	form_el.appendChild(el1);
+
+	domInsertAfter(form_el, document.getElementById("map"));
+
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	map = new OpenLayers.Map.cdauth("map");
 
@@ -61,7 +111,7 @@ function initMap()
 	}
 
 	var toolbar = new OpenLayers.Control.Panel();
-	var moveControl = new OpenLayers.Control({ title : "Move map" });
+	var moveControl = new OpenLayers.Control({ title : OpenLayers.i18n("Move map") });
 	map.addControl(moveControl);
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
@@ -234,3 +284,19 @@ function doUpdateLocationHash()
 		}
 	}
 }
+
+OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
+	"Move map" : "Move map",
+	"Search" : "Search",
+	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.",
+	"Clear" : "Clear",
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+});
+
+OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
+	"Move map" : "Karte verschieben",
+	"Search" : "Suchen",
+	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Ein Suchbegriff, eine URL einer GPX-, KML- OSM- oder GML-Datei oder ein OSM-Objekt wie „node 123“, „way 123“, „relation 123“ oder „trace 123“",
+	"Clear" : "Löschen",
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+});
