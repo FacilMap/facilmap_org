@@ -77,7 +77,7 @@ function initMap()
 	el3 = document.createElement("input");
 	el3.type = "button";
 	el3.id = "search-button-reset";
-	el3.onclick = function(){ document.getElementsById("search-input").value = ""; this.form.onsubmit(); return false; };
+	el3.onclick = function(){ document.getElementById("search-input").value = ""; this.form.onsubmit(); return false; };
 	el3.value = OpenLayers.i18n("Clear");
 	el2.appendChild(el3);
 	el1.appendChild(el2);
