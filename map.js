@@ -125,7 +125,7 @@ function initMap()
 
 	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
 	map.addLayer(layerMarkers);
-	var markerControl = new OpenLayers.Control.cdauth.createMarker(layerMarkers);
+	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	map.addControl(markerControl);
 	toolbar.addControls(markerControl);
 
