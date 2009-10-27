@@ -74,8 +74,10 @@
 	<body>
 		<div id="map"></div>
 		<script type="text/javascript">
-			initMap();
-			document.getElementById("search-input").focus();
+			onload = function() {
+				initMap();
+				document.getElementById("search-input").focus();
+			}
 		</script>
 	</body>
 </html>
