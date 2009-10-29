@@ -149,7 +149,7 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", icon, iconHighlight);
+	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight);
 	map.addLayer(layerResults);
 
 	doUpdateLocationHash();
