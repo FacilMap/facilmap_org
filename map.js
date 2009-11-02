@@ -91,6 +91,7 @@ function initMap()
 	domInsertAfter(form_el, document.getElementById("map"));
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
+	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${url}/full";
 	map = new OpenLayers.Map.cdauth("map");
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -197,7 +198,7 @@ function geoSearch(onlygpx, dontzoomgpx)
 			{
 				case "node": search = "http://www.openstreetmap.org/api/0.6/node/"+m[2]; break;
 				case "way": search = "http://www.openstreetmap.org/api/0.6/way/"+m[2]+"/full"; break;
-				case "relation": search = "http://osm.cdauth.de/route-manager/gpx.php?relation="+m[2]; break;
+				case "relation": search = "http://www.openstreetmap.org/api/0.6/relation/"+m[2]+"/full"; break;
 				case "trace": search = "http://www.openstreetmap.org/trace/"+m[2]+"/data"; break;
 			}
 		}
