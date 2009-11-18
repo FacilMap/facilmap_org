@@ -91,7 +91,7 @@ function initMap()
 	domInsertAfter(form_el, document.getElementById("map"));
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
-	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${url}/full";
+	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${id}/full";
 	map = new OpenLayers.Map.cdauth("map");
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -117,7 +117,7 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false });
+	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, theme: null });
 	map.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
