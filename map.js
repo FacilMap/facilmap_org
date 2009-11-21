@@ -176,7 +176,7 @@ function geoSearch(onlygpx, dontzoomgpx)
 	var search = document.getElementById("search-input").value;
 
 	var gpx = false;
-	if(search.match(/^http:\/\//) && !search.match(/^http:\/\/(www\.)?osm\.org\/go\//))
+	if(search.match(/^http:\/\//))
 	{
 		var m;
 		if(m = search.match(/[#?](.*)$/))
