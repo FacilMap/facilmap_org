@@ -18,8 +18,6 @@
 	or svn://svn.cdauth.de/tools/osm/map/.
 */
 
-// TODO: Also translate layer names (at the moment not possible due to the use of layer names in the URL hash part
-
 var map;
 var layerMarkers;
 var layerResults;
@@ -116,14 +114,14 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, theme: null, shortName: "OSBu" });
+	var osb = new OpenLayers.Layer.OpenStreetBugs(OpenLayers.i18n("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
 	map.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	map.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat("Markers", { shortName : "m" });
+	layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
 	map.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	map.addControl(markerControl);
@@ -149,7 +147,7 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
 	map.addLayer(layerResults);
 
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
@@ -259,7 +257,10 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Search" : "Search",
 	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.",
 	"Clear" : "Clear",
-	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
+	"OpenStreetBugs" : "OpenStreetBugs",
+	"Markers" : "Markers",
+	"Search results" : "Search results"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -267,5 +268,8 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Search" : "Suchen",
 	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Ein Suchbegriff, eine URL einer GPX-, KML- OSM- oder GML-Datei oder ein OSM-Objekt wie „node 123“, „way 123“, „relation 123“ oder „trace 123“",
 	"Clear" : "Löschen",
-	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
+	"OpenStreetBugs" : "OpenStreetBugs",
+	"Markers" : "Marker",
+	"Search results" : "Suchergebnisse"
 });
