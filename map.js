@@ -117,14 +117,14 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, theme: null });
+	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, theme: null, shortName: "OSBu" });
 	map.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	map.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
+	layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat("Markers", { shortName : "m" });
 	map.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	map.addControl(markerControl);
@@ -150,7 +150,7 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight);
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight, { shortName : "s" });
 	map.addLayer(layerResults);
 
 	doUpdateLocationHash();
