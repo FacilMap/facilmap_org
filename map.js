@@ -184,7 +184,7 @@ function initMap()
 	map.addControl(hashHandler);
 	hashHandler.activate();
 
-	//map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
+	map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 
 	layerResults.events.register("searchBegin", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
@@ -195,9 +195,6 @@ function initMap()
 	layerResults.events.register("searchFailure", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
-
-	//makeShortCode(51.511, 0.055, 9);
-	//decodeShortLink("0EEQjE==");
 }
 
 function geoSearch(onlygpx, dontzoomgpx)
