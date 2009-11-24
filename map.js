@@ -92,7 +92,7 @@ function initMap()
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${id}/full";
-	map = new OpenLayers.Map.cdauth("map");
+	map = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
 	iconHighlight = new OpenLayers.Icon('marker-green.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -184,6 +184,8 @@ function initMap()
 	});
 	map.addControl(hashHandler);
 	hashHandler.activate();
+
+	//map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 
 	layerResults.events.register("searchBegin", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
