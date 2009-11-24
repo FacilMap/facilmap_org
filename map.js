@@ -91,7 +91,6 @@ function initMap()
 	domInsertAfter(form_el, document.getElementById("map"));
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
-	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${id}/full";
 	map = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -150,7 +149,7 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight, { shortName : "s" });
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
 	map.addLayer(layerResults);
 
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
