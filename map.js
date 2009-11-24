@@ -153,7 +153,7 @@ function initMap()
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight, { shortName : "s" });
 	map.addLayer(layerResults);
 
-	var hashHandler = new OpenLayers.cdauth.URLHashHandler(map, {
+	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
 		updateMapView : function() {
 			var query_object = decodeQueryString(this.getLocationHash());
 			if(query_object.search == "%s")
@@ -182,7 +182,8 @@ function initMap()
 			this.updateLocationHash();
 		}
 	});
-	hashHandler.updateMapView();
+	map.addControl(hashHandler);
+	hashHandler.activate();
 
 	layerResults.events.register("searchBegin", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
