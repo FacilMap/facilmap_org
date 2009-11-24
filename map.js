@@ -153,9 +153,36 @@ function initMap()
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight, { shortName : "s" });
 	map.addLayer(layerResults);
 
-	doUpdateLocationHash();
-	setInterval(doUpdateLocationHash, 500);
-	map.events.register("newHash", map, updateLocationHash);
+	var hashHandler = new OpenLayers.cdauth.URLHashHandler(map, {
+		updateMapView : function() {
+			var query_object = decodeQueryString(this.getLocationHash());
+			if(query_object.search == "%s")
+				delete query_object.search;
+			if(typeof query_object.search == "object" && query_object.search.s == "%s")
+				delete query_object.search.s;
+			if(typeof query_object.search != "undefined" && (typeof query_object.search != "object" || typeof query_object.search.s != "undefined"))
+			{
+				document.getElementById("search-input").value = (typeof query_object.search == "object" ? query_object.search.s : query_object.search);
+				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
+				if(gpx_layer)
+				{
+					delete query_object.search;
+					var i=0;
+					if(query_object.xml)
+					{
+						while(typeof query_object.xml[i] != "undefined")
+							i++;
+					}
+					else
+						query_object.xml = { };
+					query_object.xml[i] = gpx_layer.cdauthURL;
+				}
+			}
+			this.map.zoomToQuery(query_object);
+			this.updateLocationHash();
+		}
+	});
+	hashHandler.updateMapView();
 
 	layerResults.events.register("searchBegin", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
@@ -226,64 +253,6 @@ function geoSearch(onlygpx, dontzoomgpx)
 		layerResults.geoSearch(search);
 
 	return false;
-}
-
-function updateLocationHash()
-{
-	newLocationHash = true;
-}
-
-/**
- * At least in Firefox, location.hash contains “&” if the hash part contains “%26”. This makes searching for URLs (such as OSM PermaLinks) hard and we work around that problem by extracting the desired value from location.href.
-*/
-
-function getLocationHash()
-{
-	var match = location.href.match(/#(.*)$/);
-	if(match)
-		return match[1];
-	else
-		return "";
-}
-
-function doUpdateLocationHash()
-{
-	if(newLocationHash)
-	{
-		location.hash = "#"+encodeQueryString(map.getQueryObject(layerMarkers, layerResults));
-		lastHash = getLocationHash();
-		newLocationHash = false;
-	}
-	else
-	{
-		var do_zoom = (getLocationHash() != lastHash);
-		lastHash = getLocationHash();
-		if(do_zoom)
-		{
-			var query_object = decodeQueryString(lastHash);
-			if(query_object.search == "%s")
-				delete query_object.search;
-			if(typeof query_object.search != "undefined")
-			{
-				document.getElementById("search-input").value = query_object.search;
-				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
-				if(gpx_layer)
-				{
-					delete query_object.search;
-					var i=0;
-					if(query_object.xml)
-					{
-						while(typeof query_object.xml[i] != "undefined")
-							i++;
-					}
-					else
-						query_object.xml = { };
-					query_object.xml[i] = gpx_layer.cdauthURL;
-				}
-			}
-			map.zoomToQuery(query_object, layerMarkers, layerResults);
-		}
-	}
 }
 
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
