@@ -181,6 +181,7 @@ function initMap()
 	});
 	map.addControl(hashHandler);
 	hashHandler.activate();
+	hashHandler.updateMapView();
 
 	map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 
