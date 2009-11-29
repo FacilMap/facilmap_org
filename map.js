@@ -93,6 +93,15 @@ function initMap()
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
 	iconHighlight = new OpenLayers.Icon('marker-green.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
+	var addingLayers = true;
+	map.setBaseLayer = function(layer) {
+		if(addingLayers)
+		{ // Prevent loading the default base layer if another layer will be set initially by the Permalink
+			layer.setVisibility(false);
+			return;
+		}
+		OpenLayers.Map.cdauth.prototype.setBaseLayer.apply(this, arguments);
+	};
 
 	map.addAllAvailableLayers();
 	map.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
@@ -151,6 +160,7 @@ function initMap()
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
 	map.addLayer(layerResults);
 
+	addingLayers = false;
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
 		updateMapView : function() {
 			var query_object = decodeQueryString(this.getLocationHash());
