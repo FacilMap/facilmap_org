@@ -18,8 +18,6 @@
 	or svn://svn.cdauth.de/tools/osm/map/.
 */
 
-// TODO: Also translate layer names (at the moment not possible due to the use of layer names in the URL hash part
-
 var map;
 var layerMarkers;
 var layerResults;
@@ -91,8 +89,7 @@ function initMap()
 	domInsertAfter(form_el, document.getElementById("map"));
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
-	OpenLayers.Layer.cdauth.XML.relationURL = "http://www.openstreetmap.org/api/0.6/relation/${id}/full";
-	map = new OpenLayers.Map.cdauth("map");
+	map = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
 	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
 	iconHighlight = new OpenLayers.Icon('marker-green.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
@@ -117,14 +114,14 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, theme: null });
+	var osb = new OpenLayers.Layer.OpenStreetBugs(OpenLayers.i18n("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
 	map.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	map.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	layerMarkers = new OpenLayers.Layer.cdauth.markers.LonLat("Markers");
+	layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
 	map.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	map.addControl(markerControl);
@@ -150,12 +147,43 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.markers.GeoSearch("Search results", "namefinder.php", "namefinder2.php", icon, iconHighlight);
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
 	map.addLayer(layerResults);
 
-	doUpdateLocationHash();
-	setInterval(doUpdateLocationHash, 500);
-	map.events.register("newHash", map, updateLocationHash);
+	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
+		updateMapView : function() {
+			var query_object = decodeQueryString(this.getLocationHash());
+			if(query_object.search == "%s")
+				delete query_object.search;
+			if(typeof query_object.search == "object" && query_object.search.s == "%s")
+				delete query_object.search.s;
+			if(typeof query_object.search != "undefined" && (typeof query_object.search != "object" || typeof query_object.search.s != "undefined"))
+			{
+				document.getElementById("search-input").value = (typeof query_object.search == "object" ? query_object.search.s : query_object.search);
+				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
+				if(gpx_layer)
+				{
+					delete query_object.search;
+					var i=0;
+					if(query_object.xml)
+					{
+						while(typeof query_object.xml[i] != "undefined")
+							i++;
+					}
+					else
+						query_object.xml = { };
+					query_object.xml[i] = gpx_layer.cdauthURL;
+				}
+			}
+			this.map.zoomToQuery(query_object);
+			this.updateLocationHash();
+		}
+	});
+	map.addControl(hashHandler);
+	hashHandler.activate();
+	hashHandler.updateMapView();
+
+	map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 
 	layerResults.events.register("searchBegin", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
@@ -166,9 +194,6 @@ function initMap()
 	layerResults.events.register("searchFailure", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
-
-	//makeShortCode(51.511, 0.055, 9);
-	//decodeShortLink("0EEQjE==");
 }
 
 function geoSearch(onlygpx, dontzoomgpx)
@@ -228,70 +253,15 @@ function geoSearch(onlygpx, dontzoomgpx)
 	return false;
 }
 
-function updateLocationHash()
-{
-	newLocationHash = true;
-}
-
-/**
- * At least in Firefox, location.hash contains “&” if the hash part contains “%26”. This makes searching for URLs (such as OSM PermaLinks) hard and we work around that problem by extracting the desired value from location.href.
-*/
-
-function getLocationHash()
-{
-	var match = location.href.match(/#(.*)$/);
-	if(match)
-		return match[1];
-	else
-		return "";
-}
-
-function doUpdateLocationHash()
-{
-	if(newLocationHash)
-	{
-		location.hash = "#"+encodeQueryString(map.getQueryObject(layerMarkers, layerResults));
-		lastHash = getLocationHash();
-		newLocationHash = false;
-	}
-	else
-	{
-		var do_zoom = (getLocationHash() != lastHash);
-		lastHash = getLocationHash();
-		if(do_zoom)
-		{
-			var query_object = decodeQueryString(lastHash);
-			if(query_object.search == "%s")
-				delete query_object.search;
-			if(typeof query_object.search != "undefined")
-			{
-				document.getElementById("search-input").value = query_object.search;
-				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
-				if(gpx_layer)
-				{
-					delete query_object.search;
-					var i=0;
-					if(query_object.xml)
-					{
-						while(typeof query_object.xml[i] != "undefined")
-							i++;
-					}
-					else
-						query_object.xml = { };
-					query_object.xml[i] = gpx_layer.cdauthURL;
-				}
-			}
-			map.zoomToQuery(query_object, layerMarkers, layerResults);
-		}
-	}
-}
-
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Move map" : "Move map",
 	"Search" : "Search",
 	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.",
 	"Clear" : "Clear",
-	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
+	"OpenStreetBugs" : "OpenStreetBugs",
+	"Markers" : "Markers",
+	"Search results" : "Search results"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -299,5 +269,8 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Search" : "Suchen",
 	"Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”." : "Ein Suchbegriff, eine URL einer GPX-, KML- OSM- oder GML-Datei oder ein OSM-Objekt wie „node 123“, „way 123“, „relation 123“ oder „trace 123“",
 	"Clear" : "Löschen",
-	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>"
+	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
+	"OpenStreetBugs" : "OpenStreetBugs",
+	"Markers" : "Marker",
+	"Search results" : "Suchergebnisse"
 });
