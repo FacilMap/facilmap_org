@@ -95,7 +95,7 @@ function initMap()
 	iconHighlight = new OpenLayers.Icon('marker-green.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
 
 	map.addAllAvailableLayers();
-	map.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid());
+	map.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
 
 	var activeTool = null;
 	var cookies = document.cookie.split(/;\s*/);
