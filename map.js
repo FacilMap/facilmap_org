@@ -18,7 +18,7 @@
 	or svn://svn.cdauth.de/tools/osm/map/.
 */
 
-var map;
+var mapObject;
 var layerResults;
 
 function initMap()
@@ -82,10 +82,10 @@ function initMap()
 	domInsertAfter(form_el, document.getElementById("map"));
 
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
-	map = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
+	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
 	var addingLayers = true;
-	map.setBaseLayer = function(layer) {
+	mapObject.setBaseLayer = function(layer) {
 		if(addingLayers)
 		{ // Prevent loading the default base layer if another layer will be set initially by the Permalink
 			layer.setVisibility(false);
@@ -94,8 +94,8 @@ function initMap()
 		OpenLayers.Map.cdauth.prototype.setBaseLayer.apply(this, arguments);
 	};
 
-	map.addAllAvailableLayers();
-	map.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
+	mapObject.addAllAvailableLayers();
+	mapObject.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
 
 	var activeTool = null;
 	var cookies = document.cookie.split(/;\s*/);
@@ -111,24 +111,24 @@ function initMap()
 
 	var toolbar = new OpenLayers.Control.Panel();
 	var moveControl = new OpenLayers.Control({ title : OpenLayers.i18n("Move map") });
-	map.addControl(moveControl);
+	mapObject.addControl(moveControl);
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
 	var osb = new OpenLayers.Layer.OpenStreetBugs(OpenLayers.i18n("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
-	map.addLayer(osb);
+	mapObject.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
-	map.addControl(osbControl);
+	mapObject.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
 	var layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
-	map.addLayer(layerMarkers);
+	mapObject.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
-	map.addControl(markerControl);
+	mapObject.addControl(markerControl);
 	toolbar.addControls(markerControl);
 
-	map.addControl(toolbar);
+	mapObject.addControl(toolbar);
 	if(activeTool)
 	{
 		for(var i=0; i<toolbar.controls.length; i++)
@@ -149,7 +149,7 @@ function initMap()
 	};
 
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
-	map.addLayer(layerResults);
+	mapObject.addLayer(layerResults);
 
 	addingLayers = false;
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
@@ -181,19 +181,19 @@ function initMap()
 			this.updateLocationHash();
 		}
 	});
-	map.addControl(hashHandler);
+	mapObject.addControl(hashHandler);
 	hashHandler.activate();
 	hashHandler.updateMapView();
 
-	map.addControl(new OpenLayers.Control.cdauth.GeoLocation());
+	mapObject.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 
-	layerResults.events.register("searchBegin", map, function(){
+	layerResults.events.register("searchBegin", mapObject, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
 	});
-	layerResults.events.register("searchSuccess", map, function(){
+	layerResults.events.register("searchSuccess", mapObject, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
-	layerResults.events.register("searchFailure", map, function(evt){
+	layerResults.events.register("searchFailure", mapObject, function(evt){
 		if(!evt.dontzoom)
 			alert(OpenLayers.i18n("No results."));
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
@@ -239,13 +239,13 @@ function geoSearch(onlygpx, dontzoomgpx)
 
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
 		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true });
-		map.addLayer(layer);
+		mapObject.addLayer(layer);
 		layer.events.register("loadend", layer, function() {
 			if(!dontzoomgpx)
 			{
 				var extent = this.getDataExtent();
 				if(extent)
-					map.zoomToExtent(extent);
+					mapObject.zoomToExtent(extent);
 			}
 			document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 		});
