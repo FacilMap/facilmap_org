@@ -33,7 +33,7 @@ function initMap()
 	if(location.search.length > 1)
 	{ // Move query string to location hash part
 		var search_obj = decodeQueryString(location.search.substr(1));
-		var hash_obj = decodeQueryString(getLocationHash().substr(1));
+		var hash_obj = decodeQueryString(OpenLayers.Control.cdauth.URLHashHandler.prototype.getLocationHash());
 		for(var i in search_obj)
 			hash_obj[i] = search_obj[i];
 		location.replace(location.pathname+"#"+encodeQueryString(hash_obj));
