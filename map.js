@@ -191,7 +191,9 @@ function initMap()
 	layerResults.events.register("searchSuccess", map, function(){
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
-	layerResults.events.register("searchFailure", map, function(){
+	layerResults.events.register("searchFailure", map, function(evt){
+		if(!evt.dontzoom)
+			alert(OpenLayers.i18n("No results."));
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
 }
@@ -261,7 +263,8 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
 	"OpenStreetBugs" : "OpenStreetBugs",
 	"Markers" : "Markers",
-	"Search results" : "Search results"
+	"Search results" : "Search results",
+	"No results." : "No results."
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -272,5 +275,6 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>" : "Suchergebnisse aus <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>",
 	"OpenStreetBugs" : "OpenStreetBugs",
 	"Markers" : "Marker",
-	"Search results" : "Suchergebnisse"
+	"Search results" : "Suchergebnisse",
+	"No results." : "Kein Ergebnis."
 });
