@@ -19,14 +19,7 @@
 */
 
 var map;
-var layerMarkers;
 var layerResults;
-var lastHash;
-var newLocationHash;
-var icon;
-var iconHighlight;
-var lastSearch;
-var lastSearchLayer;
 
 function initMap()
 {
@@ -91,8 +84,6 @@ function initMap()
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	map = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
-	icon = new OpenLayers.Icon('marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
-	iconHighlight = new OpenLayers.Icon('marker-green.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-9, -25));
 	var addingLayers = true;
 	map.setBaseLayer = function(layer) {
 		if(addingLayers)
@@ -131,7 +122,7 @@ function initMap()
 	map.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
+	var layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
 	map.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	map.addControl(markerControl);
