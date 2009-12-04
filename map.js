@@ -26,7 +26,7 @@ function initMap()
 	if(location.search.length > 1)
 	{ // Move query string to location hash part
 		var search_obj = decodeQueryString(location.search.substr(1));
-		var hash_obj = decodeQueryString(OpenLayers.Control.cdauth.URLHashHandler.prototype.getLocationHash());
+		var hash_obj = decodeQueryString(OpenLayers.URLHashHandler.prototype.getLocationHash());
 		for(var i in search_obj)
 			hash_obj[i] = search_obj[i];
 		location.replace(location.pathname+"#"+encodeQueryString(hash_obj));
@@ -154,7 +154,7 @@ function initMap()
 	addingLayers = false;
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
 		updateMapView : function() {
-			var query_object = decodeQueryString(this.getLocationHash());
+			var query_object = decodeQueryString(this.hashHandler.getLocationHash());
 			if(query_object.search == "%s")
 				delete query_object.search;
 			if(typeof query_object.search == "object" && query_object.search.s == "%s")
