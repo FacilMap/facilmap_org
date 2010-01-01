@@ -81,6 +81,8 @@ function initMap()
 
 	domInsertAfter(form_el, document.getElementById("map"));
 
+	OpenLayers.Popup.OPACITY = 0.7;
+
 	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
