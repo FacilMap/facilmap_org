@@ -14,8 +14,8 @@
 	You should have received a copy of the GNU Affero General Public License
 	along with cdauth’s map.  If not, see <http://www.gnu.org/licenses/>.
 
-	Obtain the source code from http://svn.cdauth.de/viewvc.cgi/Tools/osm/map/
-	or svn://svn.cdauth.de/tools/osm/map/.
+	Obtain the source code from http://gitorious.org/cdauths-map
+	or git://gitorious.org/cdauths-map/map.git.
 */
 
 var mapObject;
@@ -124,7 +124,7 @@ function initMap()
 	mapObject.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	var layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m" });
+	var layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m", saveInPermalink : true });
 	mapObject.addLayer(layerMarkers);
 	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
 	mapObject.addControl(markerControl);
@@ -150,35 +150,24 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s" });
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
 
 	addingLayers = false;
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
 		updateMapView : function() {
 			var query_object = decodeQueryString(this.hashHandler.getLocationHash());
-			if(query_object.search == "%s")
-				delete query_object.search;
-			if(typeof query_object.search == "object" && query_object.search.s == "%s")
-				delete query_object.search.s;
-			if(typeof query_object.search != "undefined" && (typeof query_object.search != "object" || typeof query_object.search.s != "undefined"))
+			if(typeof query_object.search != "undefined")
 			{
-				document.getElementById("search-input").value = (typeof query_object.search == "object" ? query_object.search.s : query_object.search);
-				var gpx_layer = geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
-				if(gpx_layer)
+				if(query_object.search != "%s")
 				{
-					delete query_object.search;
-					var i=0;
-					if(query_object.xml)
-					{
-						while(typeof query_object.xml[i] != "undefined")
-							i++;
-					}
-					else
-						query_object.xml = { };
-					query_object.xml[i] = gpx_layer.cdauthURL;
+					document.getElementById("search-input").value = query_object.search;
+					geoSearch(true, (typeof query_object.lon != "undefined" && typeof query_object.lat != "undefined"));
 				}
+				delete query_object.search;
 			}
+			else if(query_object.l && query_object.l.s && query_object.l.s.search)
+				document.getElementById("search-input").value = query_object.l.s.search;
 			this.map.zoomToQuery(query_object);
 			this.updateLocationHash();
 		}
@@ -202,7 +191,7 @@ function initMap()
 	});
 }
 
-function geoSearch(onlygpx, dontzoomgpx)
+function geoSearch()
 {
 	var search = document.getElementById("search-input").value;
 
@@ -240,23 +229,17 @@ function geoSearch(onlygpx, dontzoomgpx)
 		layerResults.geoSearch("");
 
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
-		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true });
+		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true, saveInPermalink : true });
 		mapObject.addLayer(layer);
 		layer.events.register("loadend", layer, function() {
-			if(!dontzoomgpx)
-			{
-				var extent = this.getDataExtent();
-				if(extent)
-					mapObject.zoomToExtent(extent);
-			}
+			var extent = this.getDataExtent();
+			if(extent)
+				mapObject.zoomToExtent(extent);
 			document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 		});
-		return layer;
 	}
-	else if(!onlygpx)
+	else
 		layerResults.geoSearch(search);
-
-	return false;
 }
 
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
