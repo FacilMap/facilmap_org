@@ -36,13 +36,18 @@
 			ul.buttons { list-style-type:none; padding:0; margin:0 }
 			ul.buttons li { display:inline; margin:0; padding:0; }
 
-			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; opacity:0.5; -moz-opacity:0.5; z-index:100000; }
+			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; opacity:0.5; -moz-opacity:0.5; z-index:1500; min-width:35em; max-width:40em; }
 			#search:hover { opacity:1; -moz-opacity:1; }
 			#search dt { display:none; }
 			#search dl,#search dd,#search ul,#search li { display:inline; }
 			#search-input { width:25em; }
-			#search ul { list-style-type:none; padding:0; margin:0; }
+			#search ul { list-style-type:none; padding:0; margin:0; white-space:nowrap; }
 			#search li { margin:0; padding:0; }
+
+			#search-results ol { margin:0; padding:0; list-style-type:none; }
+			#search-results li { display:block; margin:.3em 0; }
+			#search-results a { font-weight:bold; }
+			#search-results-toggle a { height:0; overflow:hidden; display:block; border-top:2px dotted #000; padding-top:.5em; margin-top:.5em; }
 
 			#search-osm-cc { margin:0; padding:0; font-size:.8em; font-style:italic; opacity:.3; -moz-opacity:.3; }
 			#search:hover #search-osm-cc { opacity:1; -moz-opacity:1; }

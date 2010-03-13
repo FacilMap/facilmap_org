@@ -21,6 +21,7 @@
 var mapObject;
 var layerResults;
 var nameFinder;
+var searchResults;
 
 function initMap()
 {
@@ -78,6 +79,35 @@ function initMap()
 	el1 = document.createElement("p");
 	el1.id = "search-osm-cc";
 	el1.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
+	form_el.appendChild(el1);
+
+	el1 = document.createElement("div");
+	el1.id = "search-results";
+	el1.style.display = "none";
+
+	el2 = document.createElement("div");
+	el2.id = "search-results-toggle";
+	el3 = document.createElement("a");
+	el3.href = "javascript:undefined";
+	el3.onclick = function() {
+		if(searchResults.style.display == "none")
+		{
+			this.firstChild.data = "-";
+			searchResults.style.display = "block";
+		}
+		else
+		{
+			this.firstChild.data = "+";
+			searchResults.style.display = "none";
+		}
+	};
+	el3.appendChild(document.createTextNode("-"));
+	el2.appendChild(el3);
+	el1.appendChild(el2);
+
+	searchResults = document.createElement("ol");
+	el1.appendChild(searchResults);
+
 	form_el.appendChild(el1);
 
 	domInsertAfter(form_el, document.getElementById("map"));
@@ -179,23 +209,20 @@ function initMap()
 	hashHandler.updateMapView();
 
 	mapObject.addControl(new OpenLayers.Control.cdauth.GeoLocation());
-
-	layerResults.events.register("searchBegin", mapObject, function(){
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
-	});
-	layerResults.events.register("searchSuccess", mapObject, function(){
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
-	});
-	layerResults.events.register("searchFailure", mapObject, function(evt){
-		if(!evt.dontzoom)
-			alert(OpenLayers.i18n("No results."));
-		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
-	});
 }
 
 function geoSearch()
 {
-	var search = document.getElementById("search-input").value;
+	var search = document.getElementById("search-input").value.replace(/^\s+/, "").replace(/\s+$/, "");
+	layerResults.showResults([ ]);
+	while(searchResults.firstChild)
+		searchResults.removeChild(searchResults.firstChild);
+	searchResults.parentNode.style.display = "none";
+
+	if(search == "")
+		return;
+
+	document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
 
 	var gpx = false;
 	if(search.match(/^http:\/\//) && !search.match(/^http:\/\/(www\.)?osm\.org\/go\//))
@@ -228,8 +255,6 @@ function geoSearch()
 
 	if(gpx)
 	{
-		layerResults.geoSearch("");
-
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = true;
 		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true, saveInPermalink : true });
 		mapObject.addLayer(layer);
@@ -241,7 +266,44 @@ function geoSearch()
 		});
 	}
 	else
-		layerResults.geoSearch(search);
+	{
+		nameFinder.find(search, function(results){
+			if(results == undefined || results.length == 0)
+				alert(OpenLayers.i18n("No results."));
+			else
+			{
+				for(var i=0; i<results.length; i++)
+				{
+					results[i].showOnMap = function() {
+						for(var j=0; j<layerResults.markers.length; j++)
+							layerResults.markers[j].cdauthFeature.popup.hide();
+						this.marker.cdauthFeature.popup.show();
+						mapObject.setCenter(this.lonlat.clone().transform(new OpenLayers.Projection("EPSG:4326"), mapObject.getProjectionObject()), this.getZoom(mapObject));
+					};
+
+					var li = document.createElement("li");
+					var a = document.createElement("a");
+					a.href = "javascript:undefined";
+					(function(result) {
+						a.onclick = function() { result.showOnMap() };
+					})(results[i]);
+					a.appendChild(document.createTextNode(results[i].name));
+					li.appendChild(a);
+					li.appendChild(document.createTextNode(" "));
+					var span = document.createElement("span");
+					span.className = "search-result-info";
+					span.appendChild(document.createTextNode("("+results[i].info+")"));
+					li.appendChild(span);
+					searchResults.appendChild(li);
+				}
+
+				layerResults.showResults([ results[0] ]);
+				searchResults.parentNode.style.display = "block";
+			}
+			layerResults.showResults(results, search, true);
+			document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
+		});
+	}
 }
 
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
