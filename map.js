@@ -20,6 +20,7 @@
 
 var mapObject;
 var layerResults;
+var nameFinder;
 
 function initMap()
 {
@@ -150,7 +151,8 @@ function initMap()
 		return ret;
 	};
 
-	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), { nameFinderURL : "namefinder.php", nameFinder2URL : "namefinder2.php", shortName : "s", saveInPermalink : true });
+	nameFinder = new OpenLayers.cdauth.NameFinder.Nominatim("namefinder.php");
+	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
 
 	addingLayers = false;
