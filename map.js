@@ -377,6 +377,10 @@ function createRoutingLayer()
 			el1.appendChild(el2);
 			info.appendChild(el1);
 		});
+		layerRouting.events.register("draggedRoute", layerRouting, function() {
+			document.getElementById("search-input").value = this.from.lat+","+this.from.lon;
+			document.getElementById("search-target-input").value = this.to.lat+","+this.to.lon;
+		});
 	}
 }
 
