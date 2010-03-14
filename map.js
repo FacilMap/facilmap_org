@@ -354,7 +354,7 @@ function createRoutingLayer()
 			onSearchStart();
 			document.getElementById("search-route-info").style.display = "none";
 		});
-		layerRouting.events.register("loadend", layerRouting, function() {
+		layerRouting.events.register("allloadend", layerRouting, function() {
 			onSearchEnd();
 
 			var info = document.getElementById("search-route-info");
