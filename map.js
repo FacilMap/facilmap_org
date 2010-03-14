@@ -144,6 +144,11 @@ function initMap()
 	el1.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
 	form_el.appendChild(el1);
 
+	el1 = document.createElement("ul");
+	el1.id = "search-route-info";
+	el1.style.display = "none";
+	form_el.appendChild(el1);
+
 	el1 = document.createElement("div");
 	el1.id = "search-results";
 	el1.style.display = "none";
@@ -290,14 +295,14 @@ function initMap()
 				showRoutingForm();
 				createRoutingLayer();
 
-				if(query_object.l.r.from != undefined && query_object.l.r.from.lon != undefined && query_object.l.r.from.lat != undefined)
-					document.getElementById("search-input").value = query_object.l.r.from.lat+","+query_object.l.r.from.lon;
-				if(query_object.l.r.to != undefined && query_object.l.r.to.lon != undefined && query_object.l.r.to.lat != undefined)
-					document.getElementById("search-target-input").value = query_object.l.r.to.lat+","+query_object.l.r.to.lon;
 				if(query_object.l.r.type != undefined)
 					document.getElementById("search-route-type").value = query_object.l.r.type;
 				if(query_object.l.r.medium != undefined)
 					document.getElementById("search-route-medium").value = query_object.l.r.medium;
+				if(query_object.l.r.from != undefined && query_object.l.r.from.lon != undefined && query_object.l.r.from.lat != undefined)
+					document.getElementById("search-input").value = query_object.l.r.from.lat+","+query_object.l.r.from.lon;
+				if(query_object.l.r.to != undefined && query_object.l.r.to.lon != undefined && query_object.l.r.to.lat != undefined)
+					document.getElementById("search-target-input").value = query_object.l.r.to.lat+","+query_object.l.r.to.lon;
 			}
 			else
 			{
@@ -311,7 +316,6 @@ function initMap()
 	});
 	mapObject.addControl(hashHandler);
 	hashHandler.activate();
-	hashHandler.updateMapView();
 
 	mapObject.addControl(new OpenLayers.Control.cdauth.GeoLocation());
 }
@@ -348,9 +352,30 @@ function createRoutingLayer()
 
 		layerRouting.events.register("loadstart", layerRouting, function() {
 			onSearchStart();
+			document.getElementById("search-route-info").style.display = "none";
 		});
 		layerRouting.events.register("loadend", layerRouting, function() {
 			onSearchEnd();
+
+			var info = document.getElementById("search-route-info");
+			while(info.firstChild)
+				info.removeChild(info.firstChild);
+			info.style.display = "block";
+			var el1,el2;
+			el1 = document.createElement("li");
+			el1.appendChild(document.createTextNode(OpenLayers.i18n("Distance")+": "+(Math.round(this.getDistance()*10)/10)+"\u2009"));
+			el2 = document.createElement("abbr");
+			el2.title = OpenLayers.i18n("kilometers");
+			el2.appendChild(document.createTextNode("km"));
+			el1.appendChild(el2);
+			info.appendChild(el1);
+
+			el1 = document.createElement("li");
+			el2 = document.createElement("a");
+			el2.href = this.getDetailedLink();
+			el2.appendChild(document.createTextNode(OpenLayers.i18n("Detailed driving instructions")));
+			el1.appendChild(el2);
+			info.appendChild(el1);
 		});
 	}
 }
@@ -370,8 +395,8 @@ function showRoutingForm()
 {
 	document.getElementById("search-route-type").parentNode.style.display =
 	document.getElementById("search-route-medium").parentNode.style.display = "inline";
-	document.getElementById("search-target-input").style.display =
-	searchTargetResults.parentNode.style.display = "block";
+	document.getElementById("search-target-input").style.display = "block";
+	searchTargetResults.parentNode.style.display = searchResults.parentNode.style.display;
 	document.getElementById("search-button").value = OpenLayers.i18n("Get directions");
 	document.getElementById("search-toggle-routing").firstChild.firstChild.data = OpenLayers.i18n("Hide directions");
 	document.getElementById("search-toggle-routing").firstChild.onclick = function() { hideRoutingForm(); };
@@ -408,6 +433,8 @@ function geoSearch()
 		searchTargetResults.removeChild(searchTargetResults.firstChild);
 	searchResults.parentNode.style.display = "none";
 	searchTargetResults.parentNode.style.display = "none";
+	document.getElementById("search-route-info").style.display = "none";
+
 	isRoutingSearch = false;
 	removeRoutingLayer();
 
@@ -600,7 +627,9 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Hide results" : "Hide results",
 	"Show results" : "Show results",
 	"Directions" : "Directions",
-	"Destination" : "Destination"
+	"Destination" : "Destination",
+	"Distance" : "Distance",
+	"kilometers" : "kilometers"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -623,5 +652,7 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Hide results" : "Einklappen",
 	"Show results" : "Ausklappen",
 	"Directions" : "Route",
-	"Destination" : "Ziel"
+	"Destination" : "Ziel",
+	"Distance" : "Entfernung",
+	"kilometers" : "Kilometer"
 });
