@@ -197,7 +197,6 @@ function initMap()
 
 	OpenLayers.Popup.OPACITY = 0.7;
 
-	OpenLayers.Layer.cdauth.XML.proxy = "gpx.php";
 	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
 
 	var addingLayers = true;
@@ -264,7 +263,7 @@ function initMap()
 		return ret;
 	};
 
-	nameFinder = new OpenLayers.cdauth.NameFinder.Nominatim("namefinder.php");
+	nameFinder = new OpenLayers.cdauth.NameFinder.Nominatim();
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
 
