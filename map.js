@@ -362,21 +362,46 @@ function createRoutingLayer()
 			while(info.firstChild)
 				info.removeChild(info.firstChild);
 			info.style.display = "block";
-			var el1,el2;
-			el1 = document.createElement("li");
-			el1.appendChild(document.createTextNode(OpenLayers.i18n("Distance")+": "+(Math.round(this.getDistance()*10)/10)+"\u2009"));
-			el2 = document.createElement("abbr");
-			el2.title = OpenLayers.i18n("kilometers");
-			el2.appendChild(document.createTextNode("km"));
-			el1.appendChild(el2);
-			info.appendChild(el1);
 
-			el1 = document.createElement("li");
-			el2 = document.createElement("a");
-			el2.href = this.getDetailedLink();
-			el2.appendChild(document.createTextNode(OpenLayers.i18n("Detailed driving instructions")));
-			el1.appendChild(el2);
-			info.appendChild(el1);
+			var distance = this.getDistance();
+			var duration = this.getDuration();
+			var detailedLink = this.getDetailedLink();
+			var el1,el2;
+
+			if(distance != null)
+			{
+				el1 = document.createElement("li");
+				el1.appendChild(document.createTextNode(OpenLayers.i18n("Distance")+": "+(Math.round(distance*10)/10)+"\u2009"));
+				el2 = document.createElement("abbr");
+				el2.title = OpenLayers.i18n("kilometers");
+				el2.appendChild(document.createTextNode("km"));
+				el1.appendChild(el2);
+				info.appendChild(el1);
+			}
+
+			if(duration != null)
+			{
+				el1 = document.createElement("li");
+				var minutes = Math.round(duration*60)%60;
+				if(minutes < 10)
+					minutes = "0"+minutes;
+				el1.appendChild(document.createTextNode(OpenLayers.i18n("Duration")+": "+Math.floor(duration)+":"+minutes+"\u2009"));
+				el2 = document.createElement("abbr");
+				el2.title = OpenLayers.i18n("hours");
+				el2.appendChild(document.createTextNode("h"));
+				el1.appendChild(el2);
+				info.appendChild(el1);
+			}
+
+			if(detailedLink != null)
+			{
+				el1 = document.createElement("li");
+				el2 = document.createElement("a");
+				el2.href = detailedLink;
+				el2.appendChild(document.createTextNode(OpenLayers.i18n("Detailed driving instructions")));
+				el1.appendChild(el2);
+				info.appendChild(el1);
+			}
 		});
 		layerRouting.events.register("draggedRoute", layerRouting, function() {
 			document.getElementById("search-input").value = this.from.lat+","+this.from.lon;
@@ -634,7 +659,9 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Directions" : "Directions",
 	"Destination" : "Destination",
 	"Distance" : "Distance",
-	"kilometers" : "kilometers"
+	"Duration" : "Duration",
+	"kilometers" : "kilometers",
+	"hours" : "hours"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -659,5 +686,7 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Directions" : "Route",
 	"Destination" : "Ziel",
 	"Distance" : "Entfernung",
-	"kilometers" : "Kilometer"
+	"Duration" : "Dauer",
+	"kilometers" : "Kilometer",
+	"hours" : "Stunden"
 });
