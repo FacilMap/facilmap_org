@@ -404,8 +404,8 @@ function createRoutingLayer()
 			}
 		});
 		layerRouting.events.register("draggedRoute", layerRouting, function() {
-			document.getElementById("search-input").value = this.from.lat+","+this.from.lon;
-			document.getElementById("search-target-input").value = this.to.lat+","+this.to.lon;
+			document.getElementById("search-input").value = this.provider.from.lat+","+this.provider.from.lon;
+			document.getElementById("search-target-input").value = this.provider.to.lat+","+this.provider.to.lon;
 		});
 	}
 }
