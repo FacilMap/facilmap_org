@@ -75,10 +75,14 @@ function initMap()
 	el1.appendChild(el2);
 	form_el.appendChild(el1);
 
-	el1 = document.createElement("p");
-	el1.id = "search-osm-cc";
-	el1.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
-	form_el.appendChild(el1);
+	var osmcc = document.createElement("p");
+	osmcc.id = "search-osm-cc";
+	osmcc.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
+	form_el.appendChild(osmcc);
+
+	form_el.onmouseover = function(){ changeOpacity(this, 1); changeOpacity(osmcc, 1); };
+	form_el.onmouseout = function(){ changeOpacity(this, 0.5); changeOpacity(osmcc, 0.3); };
+	form_el.onmouseout();
 
 	domInsertAfter(form_el, document.getElementById("map"));
 
@@ -190,6 +194,14 @@ function initMap()
 			alert(OpenLayers.i18n("No results."));
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
+
+	var els = document.getElementsByClassName("olControlPanel");
+	for(var i=0; i<els.length; i++)
+	{
+		els[i].onmouseover = function(){ changeOpacity(this, 1); }
+		els[i].onmouseout = function(){ changeOpacity(this, 0.5); }
+		els[i].onmouseout();
+	}
 }
 
 function geoSearch()
@@ -241,6 +253,50 @@ function geoSearch()
 	}
 	else
 		layerResults.geoSearch(search);
+}
+
+function changeOpacity(el, opacity, ms)
+{
+	if(changeOpacity.timeouts == undefined)
+		changeOpacity.timeouts = { };
+
+	var timeoutObj = null;
+	for(var i in changeOpacity.timeouts)
+	{
+		if(changeOpacity.timeouts[i] != undefined && changeOpacity.timeouts[i].el === el)
+		{
+			timeoutObj = i;
+			break;
+		}
+	}
+	if(timeoutObj == null)
+	{
+		var i=0;
+		while(changeOpacity.timeouts[i] != undefined)
+			i++;
+		timeoutObj = i;
+		changeOpacity.timeouts[timeoutObj] = { el : el, timeout : null }
+	}
+	else if(changeOpacity.timeouts[timeoutObj].timeout != null)
+		clearTimeout(changeOpacity.timeouts[timeoutObj].timeout);
+
+	if(ms == undefined)
+		ms = 750;
+	var initTime = new Date().getTime();
+	var initOpacity = 1 * (el.style.opacity == "" ? 1 : 1*el.style.opacity);
+	var callback = function() {
+		var period = new Date().getTime()-initTime;
+		if(period > ms)
+			period = ms;
+		var newOpacity = initOpacity+(period/ms)*(opacity-initOpacity);
+		OpenLayers.Util.modifyDOMElement(el, null, null, null, null, null, null, newOpacity);
+
+		if(period < ms)
+			changeOpacity.timeouts[timeoutObj].timeout = setTimeout(callback, 100);
+		else
+			changeOpacity.timeouts[timeoutObj] = undefined;
+	};
+	callback();
 }
 
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
