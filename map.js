@@ -255,50 +255,6 @@ function geoSearch()
 		layerResults.geoSearch(search);
 }
 
-function changeOpacity(el, opacity, ms)
-{
-	if(changeOpacity.timeouts == undefined)
-		changeOpacity.timeouts = { };
-
-	var timeoutObj = null;
-	for(var i in changeOpacity.timeouts)
-	{
-		if(changeOpacity.timeouts[i] != undefined && changeOpacity.timeouts[i].el === el)
-		{
-			timeoutObj = i;
-			break;
-		}
-	}
-	if(timeoutObj == null)
-	{
-		var i=0;
-		while(changeOpacity.timeouts[i] != undefined)
-			i++;
-		timeoutObj = i;
-		changeOpacity.timeouts[timeoutObj] = { el : el, timeout : null }
-	}
-	else if(changeOpacity.timeouts[timeoutObj].timeout != null)
-		clearTimeout(changeOpacity.timeouts[timeoutObj].timeout);
-
-	if(ms == undefined)
-		ms = 750;
-	var initTime = new Date().getTime();
-	var initOpacity = 1 * (el.style.opacity == "" ? 1 : 1*el.style.opacity);
-	var callback = function() {
-		var period = new Date().getTime()-initTime;
-		if(period > ms)
-			period = ms;
-		var newOpacity = initOpacity+(period/ms)*(opacity-initOpacity);
-		OpenLayers.Util.modifyDOMElement(el, null, null, null, null, null, null, newOpacity);
-
-		if(period < ms)
-			changeOpacity.timeouts[timeoutObj].timeout = setTimeout(callback, 100);
-		else
-			changeOpacity.timeouts[timeoutObj] = undefined;
-	};
-	callback();
-}
-
 OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Move map" : "Move map",
 	"Search" : "Search",
