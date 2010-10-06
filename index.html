@@ -75,6 +75,11 @@
 			#map .olControlAttribution { bottom:1.5em; text-shadow:#fff 1px 1px 0; }
 			#map .olControlcdauthGeoLocation { position:absolute; font-size:smaller; right:3px; bottom:3em; text-shadow:#fff 1px 1px 0; }
 			#map .olControlMousePosition { text-shadow:#fff 1px 1px 0; }
+
+			fieldset.content-hidden { border-left:none; border-bottom:none; border-right:none; }
+			fieldset.content-hidden legend a:before { content:"+ "; color:#aaa; }
+			fieldset.content-visible legend a:before { content:"− "; color:#aaa; }
+			fieldset.content-hidden .fieldset-content { display:none; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="cdauth’s map" />
 		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
