@@ -197,7 +197,7 @@ function initMap()
 
 	OpenLayers.Popup.OPACITY = 0.7;
 
-	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : null });
+	mapObject = new OpenLayers.Map.cdauth("map");
 
 	var addingLayers = true;
 	mapObject.setBaseLayer = function(layer) {
@@ -266,6 +266,9 @@ function initMap()
 	nameFinder = new OpenLayers.cdauth.NameFinder.Nominatim();
 	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
+
+	nameFinder.initAutoSuggest(document.getElementById("search-input"));
+	nameFinder.initAutoSuggest(document.getElementById("search-target-input"));
 
 	addingLayers = false;
 	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
