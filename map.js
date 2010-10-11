@@ -98,7 +98,7 @@ function initMap()
 	el2 = document.createElement("li");
 	el3 = document.createElement("select");
 	el3.id = "search-route-type";
-	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.routingType != this.value) layerRouting.setType(this.value); };
+	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.routingType != this.value) layerRouting.setType(this.value); };
 	el4 = document.createElement("option");
 	el4.value = OpenLayers.cdauth.Routing.Type.FASTEST;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Fastest")));
@@ -113,7 +113,7 @@ function initMap()
 	el2 = document.createElement("li");
 	el3 = document.createElement("select");
 	el3.id = "search-route-medium";
-	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.medium != this.value) layerRouting.setMedium(this.value); };
+	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.medium != this.value) layerRouting.setMedium(this.value); };
 	el4 = document.createElement("option");
 	el4.value = OpenLayers.cdauth.Routing.Medium.CAR;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Car")));
