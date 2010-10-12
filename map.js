@@ -544,6 +544,8 @@ function geoSearch()
 			var extent = this.getDataExtent();
 			if(extent)
 				mapObject.zoomToExtent(extent);
+		});
+		layer.events.register("allloadend", layer, function() {
 			onSearchEnd();
 		});
 	}
