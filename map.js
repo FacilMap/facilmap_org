@@ -26,8 +26,6 @@ var searchResults;
 var searchTargetResults;
 var isRoutingSearch = false;
 
-var searchFavourites = { };
-
 function initMap()
 {
 	if(location.search.length > 1)
@@ -557,18 +555,17 @@ function geoSearch()
 			createRoutingLayer();
 		}
 
-		nameFinder.find(search, function(results){
+		var searchCallback = function(results){
 			if(!isRoutingSearch)
-				layerResults.showResults(results, search, true);
+				layerResults.showResults(results, search);
 
 			if(results == undefined || results.length == 0)
 				alert(OpenLayers.i18n("No results."));
-			else
+			else if(results.length > 1)
 			{
 				for(var i=0; i<results.length; i++)
 				{
 					results[i].showOnMap = function() {
-						searchFavourites[search] = this.lonlat;
 						for(var j=0; j<layerResults.markers.length; j++)
 							layerResults.markers[j].cdauthFeature.popup.hide();
 						if(isRoutingSearch)
@@ -596,43 +593,33 @@ function geoSearch()
 					searchResults.appendChild(li);
 				}
 
-				var show = 0;
-				if(searchFavourites[search] != undefined)
-				{
-					for(var i=0; i<results.length; i++)
-					{
-						if(searchFavourites[search].lon == results[i].lonlat.lon && searchFavourites[search].lat == results[i].lonlat.lat)
-						{
-							show = i;
-							break;
-						}
-					}
-				}
-				results[show].showOnMap();
+				searchResults.parentNode.style.display = "block";
+				if(document.getElementById("search-target-input").style.display != "none")
+					searchTargetResults.parentNode.style.display = "block";
 			}
-
-			searchResults.parentNode.style.display = "block";
-			if(document.getElementById("search-target-input").style.display != "none")
-				searchTargetResults.parentNode.style.display = "block";
 
 			if(results == undefined || results.length == 0 || !isRoutingSearch)
 				onSearchEnd();
-		});
+		};
+
+		/*if(document.getElementById("search-input").cdauthAutocompleteSelected != null)
+			searchCallback([ document.getElementById("search-input").cdauthAutocompleteSelected ]);
+		else*/
+			nameFinder.find(search, searchCallback);
 
 		if(isRoutingSearch)
 		{
-			nameFinder.find(searchTarget, function(results){
+			var searchTargetCallback = function(results){
 				if(results == undefined || results.length == 0)
 				{
 					alert(OpenLayers.i18n("No results."));
 					onSearchEnd();
 				}
-				else
+				else if(results.length > 1)
 				{
 					for(var i=0; i<results.length; i++)
 					{
 						results[i].showOnMap = function() {
-							searchFavourites[searchTarget] = this.lonlat;
 							layerRouting.setTo(this.lonlat, true);
 						};
 
@@ -651,24 +638,15 @@ function geoSearch()
 						li.appendChild(span);
 						searchTargetResults.appendChild(li);
 					}
-
-					var show = 0;
-					if(searchFavourites[searchTarget] != undefined)
-					{
-						for(var i=0; i<results.length; i++)
-						{
-							if(searchFavourites[searchTarget].lon == results[i].lonlat.lon && searchFavourites[searchTarget].lat == results[i].lonlat.lat)
-							{
-								show = i;
-								break;
-							}
-						}
-					}
-					results[show].showOnMap();
 				}
 				searchResults.parentNode.style.display = "block";
 				searchTargetResults.parentNode.style.display = "block";
-			});
+			};
+
+			/*if(document.getElementById("search-target-input").cdauthAutocompleteSelected != null)
+				searchTargetCallback([ document.getElementById("search-target-input").cdauthAutocompleteSelected ]);
+			else*/
+				nameFinder.find(searchTarget, searchTargetCallback);
 		}
 	}
 }
