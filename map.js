@@ -195,6 +195,27 @@ function initMap()
 		document.getElementById("search-input").disabled = document.getElementById("search-button").disabled = document.getElementById("search-button-reset").disabled = false;
 	});
 
+	if(!document.getElementsByClassName)
+	{
+		document.getElementsByClassName = function(className) {
+			var ret = [ ];
+			var els = document.getElementsByTagName("*");
+			for(var i=0; i<els.length; i++)
+			{
+				var classNames = els[i].className.split(/\s+/);
+				for(var j=0; j<classNames.length; j++)
+				{
+					if(classNames[j] == className)
+					{
+						ret.push(els[i]);
+						break;
+					}
+				}
+			}
+			return ret;
+		};
+	}
+
 	var els = document.getElementsByClassName("olControlPanel");
 	for(var i=0; i<els.length; i++)
 	{
