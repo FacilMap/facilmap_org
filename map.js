@@ -563,7 +563,7 @@ function geoSearch()
 
 			if(results == undefined || results.length == 0)
 				alert(OpenLayers.i18n("No results."));
-			else if(results.length > 1)
+			else
 			{
 				for(var i=0; i<results.length; i++)
 				{
@@ -579,25 +579,33 @@ function geoSearch()
 						}
 					};
 
-					var li = document.createElement("li");
-					var a = document.createElement("a");
-					a.href = "javascript:undefined";
-					(function(result) {
-						a.onclick = function() { result.showOnMap() };
-					})(results[i]);
-					a.appendChild(document.createTextNode(results[i].name));
-					li.appendChild(a);
-					li.appendChild(document.createTextNode(" "));
-					var span = document.createElement("span");
-					span.className = "search-result-info";
-					span.appendChild(document.createTextNode("("+results[i].info+")"));
-					li.appendChild(span);
-					searchResults.appendChild(li);
+					if(results.length > 1)
+					{
+						var li = document.createElement("li");
+						var a = document.createElement("a");
+						a.href = "javascript:undefined";
+						(function(result) {
+							a.onclick = function() { result.showOnMap() };
+						})(results[i]);
+						a.appendChild(document.createTextNode(results[i].name));
+						li.appendChild(a);
+						li.appendChild(document.createTextNode(" "));
+						var span = document.createElement("span");
+						span.className = "search-result-info";
+						span.appendChild(document.createTextNode("("+results[i].info+")"));
+						li.appendChild(span);
+						searchResults.appendChild(li);
+					}
 				}
 
-				searchResults.parentNode.style.display = "block";
-				if(document.getElementById("search-target-input").style.display != "none")
-					searchTargetResults.parentNode.style.display = "block";
+				if(results.length == 1)
+					results[0].showOnMap();
+				else
+				{
+					searchResults.parentNode.style.display = "block";
+					if(document.getElementById("search-target-input").style.display != "none")
+						searchTargetResults.parentNode.style.display = "block";
+				}
 			}
 
 			if(results == undefined || results.length == 0 || !isRoutingSearch)
@@ -617,7 +625,7 @@ function geoSearch()
 					alert(OpenLayers.i18n("No results."));
 					onSearchEnd();
 				}
-				else if(results.length > 1)
+				else
 				{
 					for(var i=0; i<results.length; i++)
 					{
@@ -625,24 +633,33 @@ function geoSearch()
 							layerRouting.setTo(this.lonlat, true);
 						};
 
-						var li = document.createElement("li");
-						var a = document.createElement("a");
-						a.href = "javascript:undefined";
-						(function(result) {
-							a.onclick = function() { result.showOnMap() };
-						})(results[i]);
-						a.appendChild(document.createTextNode(results[i].name));
-						li.appendChild(a);
-						li.appendChild(document.createTextNode(" "));
-						var span = document.createElement("span");
-						span.className = "search-result-info";
-						span.appendChild(document.createTextNode("("+results[i].info+")"));
-						li.appendChild(span);
-						searchTargetResults.appendChild(li);
+						if(results.length > 1)
+						{
+							var li = document.createElement("li");
+							var a = document.createElement("a");
+							a.href = "javascript:undefined";
+							(function(result) {
+								a.onclick = function() { result.showOnMap() };
+							})(results[i]);
+							a.appendChild(document.createTextNode(results[i].name));
+							li.appendChild(a);
+							li.appendChild(document.createTextNode(" "));
+							var span = document.createElement("span");
+							span.className = "search-result-info";
+							span.appendChild(document.createTextNode("("+results[i].info+")"));
+							li.appendChild(span);
+							searchTargetResults.appendChild(li);
+						}
 					}
 				}
-				searchResults.parentNode.style.display = "block";
-				searchTargetResults.parentNode.style.display = "block";
+
+				if(results.length == 1)
+					results[0].showOnMap();
+				else
+				{
+					searchResults.parentNode.style.display = "block";
+					searchTargetResults.parentNode.style.display = "block";
+				}
 			};
 
 			/*if(document.getElementById("search-target-input").cdauthAutocompleteSelected != null)
