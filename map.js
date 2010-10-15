@@ -598,9 +598,10 @@ function geoSearch()
 					}
 				}
 
-				if(results.length == 1)
+				if(isRoutingSearch)
 					results[0].showOnMap();
-				else
+
+				if(results.length > 1)
 				{
 					searchResults.parentNode.style.display = "block";
 					if(document.getElementById("search-target-input").style.display != "none")
@@ -653,9 +654,9 @@ function geoSearch()
 					}
 				}
 
-				if(results.length == 1)
-					results[0].showOnMap();
-				else
+				results[0].showOnMap();
+
+				if(results.length > 1)
 				{
 					searchResults.parentNode.style.display = "block";
 					searchTargetResults.parentNode.style.display = "block";
