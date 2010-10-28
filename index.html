@@ -77,7 +77,7 @@
 					document.getElementById("search-input").focus();
 				}
 			};
-			loadJavaScript("openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
+			loadJavaScript("http://osm.cdauth.eu/openstreetbugs/openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
 			loadJavaScript("http://osm.cdauth.eu/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
 			loadJavaScript("map.js", function() { return window.initMap != undefined; }, oneLoaded);
 		// ]]>
