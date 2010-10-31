@@ -139,10 +139,14 @@ function initMap()
 	el1.appendChild(el2);
 	form_el.appendChild(el1);
 
-	el1 = document.createElement("p");
-	el1.id = "search-osm-cc";
-	el1.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
-	form_el.appendChild(el1);
+	var osmcc = document.createElement("p");
+	osmcc.id = "search-osm-cc";
+	osmcc.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
+	form_el.appendChild(osmcc);
+
+	form_el.onmouseover = function(){ changeOpacity(this, 1); changeOpacity(osmcc, 1); };
+	form_el.onmouseout = function(){ changeOpacity(this, 0.5); changeOpacity(osmcc, 0.3); };
+	form_el.onmouseout();
 
 	el1 = document.createElement("ul");
 	el1.id = "search-route-info";
@@ -197,7 +201,7 @@ function initMap()
 
 	OpenLayers.Popup.OPACITY = 0.7;
 
-	mapObject = new OpenLayers.Map.cdauth("map");
+	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : "prototypes.css" });
 
 	var addingLayers = true;
 	mapObject.setBaseLayer = function(layer) {
@@ -322,6 +326,35 @@ function initMap()
 	hashHandler.activate();
 
 	mapObject.addControl(new OpenLayers.Control.cdauth.GeoLocation());
+
+	if(!document.getElementsByClassName)
+	{
+		document.getElementsByClassName = function(className) {
+			var ret = [ ];
+			var els = document.getElementsByTagName("*");
+			for(var i=0; i<els.length; i++)
+			{
+				var classNames = els[i].className.split(/\s+/);
+				for(var j=0; j<classNames.length; j++)
+				{
+					if(classNames[j] == className)
+					{
+						ret.push(els[i]);
+						break;
+					}
+				}
+			}
+			return ret;
+		};
+	}
+
+	var els = document.getElementsByClassName("olControlPanel");
+	for(var i=0; i<els.length; i++)
+	{
+		els[i].onmouseover = function(){ changeOpacity(this, 1); }
+		els[i].onmouseout = function(){ changeOpacity(this, 0.5); }
+		els[i].onmouseout();
+	}
 }
 
 function onSearchStart()

@@ -35,8 +35,7 @@
 			ul.buttons { list-style-type:none; padding:0; margin:0 }
 			ul.buttons li { display:inline; margin:0; padding:0; }
 
-			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; opacity:0.5; -moz-opacity:0.5; z-index:1500; width:40em; color:#aaa; }
-			#search:hover { opacity:1; -moz-opacity:1; color:#000; }
+			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; z-index:100000; width:40em; }
 			#search dt { display:none; }
 			#search dl,#search ul { display:inline-block; vertical-align:top; }
 			#search dl { width:25em; }
@@ -62,11 +61,10 @@
 			.result-heading { font-weight:normal; }
 			.result-heading a { font-size:.83em; }
 
-			.olControlPanel { position:absolute; top:1em; right:5%; border:.2em dotted #000; opacity:0.5; -moz-opacity:0.5; padding:.3em; background:#fff; }
-			.olControlPanel:hover { opacity:1; -moz-opacity:1; }
+			.olControlPanel { position:absolute; top:1em; right:5%; border:.2em dotted #000; padding:.3em; background:#fff; }
 
 			.olControlItemActive,.olControlItemInactive,.olControlOpenStreetBugsItemActive,.olControlOpenStreetBugsItemInactive,.olControlcdauthCreateMarkerItemActive,.olControlcdauthCreateMarkerItemInactive { height:25px; width:25px; background-repeat:no-repeat; background-position:center; float:left; padding:0 .2em; }
-			.olControlItemInactive,.olControlOpenStreetBugsItemInactive,.olControlcdauthCreateMarkerItemInactive { opacity:0.3; -moz-opacity:0.3; }
+			.olControlItemInactive,.olControlOpenStreetBugsItemInactive,.olControlcdauthCreateMarkerItemInactive { opacity:0.3; -moz-opacity:0.3; filter:alpha(opacity=30); }
 
 			.olControlItemActive,.olControlItemInactive { background-image:url("move.png"); }
 			.olControlOpenStreetBugsItemActive,.olControlOpenStreetBugsItemInactive { background-image:url(http://openstreetbugs.schokokeks.org/client/icon_error_add.png); }
@@ -83,21 +81,26 @@
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="cdauth’s map" />
 		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-		<!--<script type="text/javascript" src="openlayers/OpenLayers.js"></script>-->
-		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxQe8fls808ouw55mfsb9VLPMfxZSBRAxMJl1CWns7WN__O20IuUSiDKng"></script>
-		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=cdauths-map"></script>
-		<script type="text/javascript" src="http://osm.cdauth.eu/ajax-proxy/ajax-proxy.js"></script>
 		<script type="text/javascript" src="prototypes.js"></script>
-		<script type="text/javascript" src="openstreetbugs.js"></script>
-		<script type="text/javascript" src="map.js"></script>
 	</head>
 	<body>
 		<div id="map"></div>
 		<script type="text/javascript">
-			onload = function() {
-				initMap();
-				document.getElementById("search-input").focus();
-			}
+		// <![CDATA[
+			var toLoad = 3;
+			var oneLoaded = function() {
+				if(--toLoad == 0)
+				{
+					initMap();
+					document.getElementById("search-input").focus();
+				}
+			};
+			loadJavaScript("http://osm.cdauth.eu/openstreetbugs/openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
+			loadJavaScript("http://osm.cdauth.eu/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
+			loadJavaScript("map.js", function() { return window.initMap != undefined; }, oneLoaded);
+		// ]]>
 		</script>
+		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxQe8fls808ouw55mfsb9VLPMfxZSBRAxMJl1CWns7WN__O20IuUSiDKng"></script>
+		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=cdauths-map"></script>
 	</body>
 </html>
