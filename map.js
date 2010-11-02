@@ -436,6 +436,24 @@ function createRoutingLayer()
 				el1.appendChild(el2);
 				info.appendChild(el1);
 			}
+
+			if(layerRouting.provider.reorderViaPoints != OpenLayers.cdauth.Routing.prototype.reorderViaPoints && layerRouting.provider.via.length >= 2)
+			{
+				el1 = document.createElement("li");
+				el2 = document.createElement("a");
+				el2.href = "#";
+				el2.onclick = function() {
+					onSearchStart();
+					layerRouting.reorderViaPoints(function(error) {
+						if(error)alert(error);
+						onSearchEnd();
+					});
+					return false;
+				};
+				el2.appendChild(document.createTextNode(OpenLayers.i18n("Optimise route points")));
+				el1.appendChild(el2);
+				info.appendChild(el1);
+			}
 		});
 		layerRouting.events.register("draggedRoute", layerRouting, function() {
 			document.getElementById("search-input").value = this.provider.from.lat+","+this.provider.from.lon;
@@ -695,7 +713,8 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Distance" : "Distance",
 	"Duration" : "Duration",
 	"kilometers" : "kilometers",
-	"hours" : "hours"
+	"hours" : "hours",
+	"Optimise route points" : "Optimise route points"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -722,5 +741,6 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Distance" : "Entfernung",
 	"Duration" : "Dauer",
 	"kilometers" : "Kilometer",
-	"hours" : "Stunden"
+	"hours" : "Stunden",
+	"Optimise route points" : "Routenpunkte optimieren"
 });
