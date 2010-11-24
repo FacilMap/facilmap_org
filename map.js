@@ -1,7 +1,7 @@
 /*
 	This file is part of cdauth’s map.
 
-	OSM Route Manager is free software: you can redistribute it and/or modify
+	cdauth’s map is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
@@ -14,8 +14,7 @@
 	You should have received a copy of the GNU Affero General Public License
 	along with cdauth’s map.  If not, see <http://www.gnu.org/licenses/>.
 
-	Obtain the source code from http://gitorious.org/cdauths-map
-	or git://gitorious.org/cdauths-map/map.git.
+	Obtain the source code from http://gitorious.org/facilmap/cdauths-map.
 */
 
 var mapObject;
@@ -98,11 +97,11 @@ function initMap()
 	el3.id = "search-route-type";
 	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.routingType != this.value) layerRouting.setType(this.value); };
 	el4 = document.createElement("option");
-	el4.value = OpenLayers.cdauth.Routing.Type.FASTEST;
+	el4.value = FacilMap.Routing.Type.FASTEST;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Fastest")));
 	el3.appendChild(el4);
 	el4 = document.createElement("option");
-	el4.value = OpenLayers.cdauth.Routing.Type.SHORTEST;
+	el4.value = FacilMap.Routing.Type.SHORTEST;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Shortest")));
 	el3.appendChild(el4);
 	el2.appendChild(el3);
@@ -113,15 +112,15 @@ function initMap()
 	el3.id = "search-route-medium";
 	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.medium != this.value) layerRouting.setMedium(this.value); };
 	el4 = document.createElement("option");
-	el4.value = OpenLayers.cdauth.Routing.Medium.CAR;
+	el4.value = FacilMap.Routing.Medium.CAR;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Car")));
 	el3.appendChild(el4);
 	el4 = document.createElement("option");
-	el4.value = OpenLayers.cdauth.Routing.Medium.BICYCLE;
+	el4.value = FacilMap.Routing.Medium.BICYCLE;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Bicycle")));
 	el3.appendChild(el4);
 	el4 = document.createElement("option");
-	el4.value = OpenLayers.cdauth.Routing.Medium.FOOT;
+	el4.value = FacilMap.Routing.Medium.FOOT;
 	el4.appendChild(document.createTextNode(OpenLayers.i18n("Foot")));
 	el3.appendChild(el4);
 	el2.appendChild(el3);
@@ -199,7 +198,7 @@ function initMap()
 
 	OpenLayers.Popup.OPACITY = 0.7;
 
-	mapObject = new OpenLayers.Map.cdauth("map", { cdauthTheme : "prototypes.css" });
+	mapObject = new FacilMap.Map("map", { fmTheme : "prototypes.css" });
 
 	var addingLayers = true;
 	mapObject.setBaseLayer = function(layer) {
@@ -208,11 +207,11 @@ function initMap()
 			layer.setVisibility(false);
 			return;
 		}
-		OpenLayers.Map.cdauth.prototype.setBaseLayer.apply(this, arguments);
+		FacilMap.Map.prototype.setBaseLayer.apply(this, arguments);
 	};
 
 	mapObject.addAllAvailableLayers();
-	mapObject.addLayer(new OpenLayers.Layer.cdauth.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
+	mapObject.addLayer(new FacilMap.Layer.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
 
 	var activeTool = null;
 	var cookies = document.cookie.split(/;\s*/);
@@ -239,9 +238,9 @@ function initMap()
 	mapObject.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	var layerMarkers = new OpenLayers.Layer.cdauth.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m", saveInPermalink : true });
+	var layerMarkers = new FacilMap.Layer.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m", saveInPermalink : true });
 	mapObject.addLayer(layerMarkers);
-	var markerControl = new OpenLayers.Control.cdauth.CreateMarker(layerMarkers);
+	var markerControl = new FacilMap.Control.CreateMarker(layerMarkers);
 	mapObject.addControl(markerControl);
 	toolbar.addControls(markerControl);
 
@@ -265,15 +264,15 @@ function initMap()
 		return ret;
 	};
 
-	nameFinder = new OpenLayers.cdauth.NameFinder.Nominatim();
-	layerResults = new OpenLayers.Layer.cdauth.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
+	nameFinder = new FacilMap.NameFinder.Nominatim();
+	layerResults = new FacilMap.Layer.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
 
 	nameFinder.initAutoSuggest(document.getElementById("search-input"));
 	nameFinder.initAutoSuggest(document.getElementById("search-target-input"));
 
 	addingLayers = false;
-	var hashHandler = new OpenLayers.Control.cdauth.URLHashHandler({
+	var hashHandler = new FacilMap.Control.URLHashHandler({
 		updateMapView : function() {
 			var query_object = decodeQueryString(this.hashHandler.getLocationHash());
 			if(typeof query_object.search != "undefined" && query_object.search != "%s")
@@ -323,7 +322,7 @@ function initMap()
 		location.hash = "#lat=0;lon=0;zoom=2";
 	hashHandler.activate();
 
-	mapObject.addControl(new OpenLayers.Control.cdauth.GeoLocation());
+	mapObject.addControl(new FacilMap.Control.GeoLocation());
 
 	if(!document.getElementsByClassName)
 	{
@@ -379,7 +378,7 @@ function createRoutingLayer()
 {
 	if(layerRouting == null)
 	{
-		layerRouting = new OpenLayers.Layer.cdauth.XML.Routing(OpenLayers.i18n("Directions"), { shortName : "r", saveInPermalink : true });
+		layerRouting = new FacilMap.Layer.XML.Routing(OpenLayers.i18n("Directions"), { shortName : "r", saveInPermalink : true });
 		mapObject.addLayer(layerRouting);
 
 		layerRouting.setType(document.getElementById("search-route-type").value);
@@ -437,7 +436,7 @@ function createRoutingLayer()
 				info.appendChild(el1);
 			}
 
-			if(layerRouting.provider.reorderViaPoints != OpenLayers.cdauth.Routing.prototype.reorderViaPoints && layerRouting.provider.via.length >= 2)
+			if(layerRouting.provider.reorderViaPoints != FacilMap.Routing.prototype.reorderViaPoints && layerRouting.provider.via.length >= 2)
 			{
 				el1 = document.createElement("li");
 				el2 = document.createElement("a");
@@ -556,7 +555,7 @@ function geoSearch()
 
 	if(gpx)
 	{
-		var layer = new OpenLayers.Layer.cdauth.XML(null, search, { removableInLayerSwitcher: true, saveInPermalink : true });
+		var layer = new FacilMap.Layer.XML(null, search, { removableInLayerSwitcher: true, saveInPermalink : true });
 		mapObject.addLayer(layer);
 		layer.events.register("loadend", layer, function() {
 			var extent = this.getDataExtent();
@@ -587,12 +586,12 @@ function geoSearch()
 				{
 					results[i].showOnMap = function() {
 						for(var j=0; j<layerResults.markers.length; j++)
-							layerResults.markers[j].cdauthFeature.popup.hide();
+							layerResults.markers[j].fmFeature.popup.hide();
 						if(isRoutingSearch)
 							layerRouting.setFrom(this.lonlat, true);
 						else
 						{
-							this.marker.cdauthFeature.popup.show();
+							this.marker.fmFeature.popup.show();
 							mapObject.setCenter(this.lonlat.clone().transform(new OpenLayers.Projection("EPSG:4326"), mapObject.getProjectionObject()), this.getZoom(mapObject));
 						}
 					};
@@ -631,8 +630,8 @@ function geoSearch()
 				onSearchEnd();
 		};
 
-		/*if(document.getElementById("search-input").cdauthAutocompleteSelected != null)
-			searchCallback([ document.getElementById("search-input").cdauthAutocompleteSelected ]);
+		/*if(document.getElementById("search-input").fmAutocompleteSelected != null)
+			searchCallback([ document.getElementById("search-input").fmAutocompleteSelected ]);
 		else*/
 			nameFinder.find(search, searchCallback);
 
@@ -681,8 +680,8 @@ function geoSearch()
 				}
 			};
 
-			/*if(document.getElementById("search-target-input").cdauthAutocompleteSelected != null)
-				searchTargetCallback([ document.getElementById("search-target-input").cdauthAutocompleteSelected ]);
+			/*if(document.getElementById("search-target-input").fmAutocompleteSelected != null)
+				searchTargetCallback([ document.getElementById("search-target-input").fmAutocompleteSelected ]);
 			else*/
 				nameFinder.find(searchTarget, searchTargetCallback);
 		}
