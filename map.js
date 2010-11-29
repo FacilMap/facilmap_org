@@ -29,11 +29,11 @@ function initMap()
 {
 	if(location.search.length > 1)
 	{ // Move query string to location hash part
-		var search_obj = decodeQueryString(location.search.substr(1));
-		var hash_obj = decodeQueryString(OpenLayers.URLHashHandler.prototype.getLocationHash());
+		var search_obj = FacilMap.Util.decodeQueryString(location.search.substr(1));
+		var hash_obj = FacilMap.Util.decodeQueryString(OpenLayers.URLHashHandler.prototype.getLocationHash());
 		for(var i in search_obj)
 			hash_obj[i] = search_obj[i];
-		location.replace(location.pathname+"#"+encodeQueryString(hash_obj));
+		location.replace(location.pathname+"#"+FacilMap.Util.encodeQueryString(hash_obj));
 		return;
 	}
 
@@ -141,8 +141,8 @@ function initMap()
 	osmcc.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
 	form_el.appendChild(osmcc);
 
-	form_el.onmouseover = function(){ changeOpacity(this, 1); changeOpacity(osmcc, 1); };
-	form_el.onmouseout = function(){ changeOpacity(this, 0.5); changeOpacity(osmcc, 0.3); };
+	form_el.onmouseover = function(){ FacilMap.Util.changeOpacity(this, 1); FacilMap.Util.changeOpacity(osmcc, 1); };
+	form_el.onmouseout = function(){ FacilMap.Util.changeOpacity(this, 0.5); FacilMap.Util.changeOpacity(osmcc, 0.3); };
 	form_el.onmouseout();
 
 	el1 = document.createElement("ul");
@@ -192,7 +192,7 @@ function initMap()
 
 	form_el.appendChild(el1);
 
-	domInsertAfter(form_el, document.getElementById("map"));
+	FacilMap.Util.domInsertAfter(form_el, document.getElementById("map"));
 
 	hideRoutingForm();
 
@@ -274,7 +274,7 @@ function initMap()
 	addingLayers = false;
 	var hashHandler = new FacilMap.Control.URLHashHandler({
 		updateMapView : function() {
-			var query_object = decodeQueryString(this.hashHandler.getLocationHash());
+			var query_object = FacilMap.Util.decodeQueryString(this.hashHandler.getLocationHash());
 			if(typeof query_object.search != "undefined" && query_object.search != "%s")
 			{
 				if(query_object.target != undefined && query_object.target != "%s")
@@ -348,8 +348,8 @@ function initMap()
 	var els = document.getElementsByClassName("olControlPanel");
 	for(var i=0; i<els.length; i++)
 	{
-		els[i].onmouseover = function(){ changeOpacity(this, 1); }
-		els[i].onmouseout = function(){ changeOpacity(this, 0.5); }
+		els[i].onmouseover = function(){ FacilMap.Util.changeOpacity(this, 1); }
+		els[i].onmouseout = function(){ FacilMap.Util.changeOpacity(this, 0.5); }
 		els[i].onmouseout();
 	}
 }
@@ -530,7 +530,7 @@ function geoSearch()
 		var m;
 		if(m = search.match(/[#?](.*)$/))
 		{
-			var query_string = decodeQueryString(m[1]);
+			var query_string = FacilMap.Util.decodeQueryString(m[1]);
 			if(typeof query_string.lon == "undefined" || typeof query_string.lat == "undefined")
 				gpx = true;
 		}
