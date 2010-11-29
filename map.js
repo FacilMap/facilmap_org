@@ -1,20 +1,20 @@
 /*
-	This file is part of cdauth’s map.
+	This file is part of FacilMap.
 
-	cdauth’s map is free software: you can redistribute it and/or modify
+	FacilMap is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
-	cdauth’s map is distributed in the hope that it will be useful,
+	FacilMap is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Affero General Public License for more details.
 
 	You should have received a copy of the GNU Affero General Public License
-	along with cdauth’s map.  If not, see <http://www.gnu.org/licenses/>.
+	along with FacilMap.  If not, see <http://www.gnu.org/licenses/>.
 
-	Obtain the source code from http://gitorious.org/facilmap/cdauths-map.
+	Obtain the source code from http://gitorious.org/facilmap.
 */
 
 var mapObject;
@@ -218,7 +218,7 @@ function initMap()
 	for(var i=0; i<cookies.length; i++)
 	{
 		var cookie = cookies[i].split("=");
-		if(cookie[0] == "cdauthTool")
+		if(cookie[0] == "fmTool")
 		{
 			activeTool = decodeURIComponent(cookie[1]);
 			break;
@@ -260,7 +260,7 @@ function initMap()
 	toolbar.activateControl = function(control) {
 		var ret = OpenLayers.Control.Panel.prototype.activateControl.apply(this, arguments);
 
-		document.cookie = "cdauthTool="+encodeURIComponent(control.title)+";expires="+(new Date((new Date()).getTime() + 86400000000)).toGMTString();
+		document.cookie = "fmTool="+encodeURIComponent(control.title)+";expires="+(new Date((new Date()).getTime() + 86400000000)).toGMTString();
 		return ret;
 	};
 

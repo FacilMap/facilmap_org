@@ -2,28 +2,27 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <!--
-	This file is part of cdauth’s map.
+	This file is part of FacilMap.
 
-	OSM Route Manager is free software: you can redistribute it and/or modify
+	FacilMap is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
-	cdauth’s map is distributed in the hope that it will be useful,
+	FacilMap is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Affero General Public License for more details.
 
 	You should have received a copy of the GNU Affero General Public License
-	along with cdauth’s map.  If not, see <http://www.gnu.org/licenses/>.
+	along with FacilMap.  If not, see <http://www.gnu.org/licenses/>.
 
-	Obtain the source code from http://gitorious.org/cdauths-map
-	or git://gitorious.org/cdauths-map/map.git.
+	Obtain the source code from http://gitorious.org/facilmap.
 -->
 	<head>
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-		<title>cdauth’s map</title>
-		<meta name="description" content="cdauth’s map combines OpenStreetMap, Google and Yahoo maps into one simple map interface with useful tools and a search engine." />
+		<title>FacilMap</title>
+		<meta name="description" content="FacilMap combines OpenStreetMap, Google and Yahoo maps into one simple map interface with useful tools and a search engine." />
 		<style type="text/css">
 			html,body { margin:0; padding:0; border-style:none; position:absolute; top:0; left:0; height:100%; width:100%; color:#000; background:#fff; }
 			a { color:inherit; text-decoration:underline; }
@@ -79,9 +78,9 @@
 			fieldset.content-visible legend a:before { content:"− "; color:#aaa; }
 			fieldset.content-hidden .fieldset-content { display:none; }
 		</style>
-		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="cdauth’s map" />
+		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap" />
 		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-		<script type="text/javascript" src="prototypes.js"></script>
+		<script type="text/javascript" src="http://api.facilmap.org/facilmap.js"></script>
 	</head>
 	<body>
 		<div id="map"></div>
@@ -95,12 +94,12 @@
 					document.getElementById("search-input").focus();
 				}
 			};
-			loadJavaScript("http://osm.cdauth.eu/openstreetbugs/openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
-			loadJavaScript("http://osm.cdauth.eu/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
+			loadJavaScript("http://api.facilmap.org/openstreetbugs/openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
+			loadJavaScript("http://api.facilmap.org/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
 			loadJavaScript("map.js", function() { return window.initMap != undefined; }, oneLoaded);
 		// ]]>
 		</script>
-		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxQe8fls808ouw55mfsb9VLPMfxZSBRAxMJl1CWns7WN__O20IuUSiDKng"></script>
-		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=cdauths-map"></script>
+		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxT9Os3n_HQD4ATZq_2B5J8ffa0H_RTkd5XAs6VL9qzpi_zJeEmkjzZajQ"></script>
+		<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&amp;appid=facilmap"></script>
 	</body>
 </html>
