@@ -2,6 +2,6 @@
 	<ShortName>FacilMap</ShortName>
 	<Description>Search the OpenStreetMap database and display the results in different online maps.</Description>
 	<Image width="16" height="16" type="image/x-icon">http://facilmap.org/favicon.ico</Image>
-	<Url type="text/html" template="http://facilmap.org/#s={searchTerms}" />
+	<Url type="text/html" template="http://facilmap.org/#q={searchTerms}" />
 	<moz:SearchForm>http://facilmap.org/</moz:SearchForm>
 </OpenSearchDescription>

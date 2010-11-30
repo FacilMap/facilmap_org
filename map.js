@@ -54,7 +54,7 @@ function initMap()
 	el3 = document.createElement("input");
 	el3.type = "text";
 	el3.id = "search-input";
-	el3.name = "search";
+	el3.name = "q";
 	el3.title = OpenLayers.i18n("Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.");
 	el2.appendChild(el3);
 	el1.appendChild(el2);
@@ -275,7 +275,8 @@ function initMap()
 	var hashHandler = new FacilMap.Control.URLHashHandler({
 		updateMapView : function() {
 			var query_object = FacilMap.Util.decodeQueryString(this.hashHandler.getLocationHash());
-			if(typeof query_object.search != "undefined" && query_object.search != "%s")
+
+			if(query_object.q != undefined && query_object.q != "%s")
 			{
 				if(query_object.target != undefined && query_object.target != "%s")
 				{
@@ -284,7 +285,7 @@ function initMap()
 					if(query_object.l != undefined && query_object.l.r != undefined)
 						delete query_object.l.r;
 				}
-				document.getElementById("search-input").value = query_object.search;
+				document.getElementById("search-input").value = query_object.q;
 				if(query_object.l != undefined && query_object.l.s != undefined)
 					delete query_object.l.s;
 				geoSearch();
