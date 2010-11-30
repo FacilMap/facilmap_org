@@ -198,7 +198,7 @@ function initMap()
 
 	OpenLayers.Popup.OPACITY = 0.7;
 
-	mapObject = new FacilMap.Map("map", { fmTheme : "prototypes.css" });
+	mapObject = new FacilMap.Map("map");
 
 	var addingLayers = true;
 	mapObject.setBaseLayer = function(layer) {
