@@ -79,24 +79,82 @@
 			fieldset.content-hidden .fieldset-content { display:none; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap" />
-		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-		<script type="text/javascript" src="http://api.facilmap.org/facilmap.js"></script>
 	</head>
 	<body>
 		<div id="map"></div>
 		<script type="text/javascript">
 		// <![CDATA[
-			var toLoad = 3;
-			var oneLoaded = function() {
-				if(--toLoad == 0)
+			// Copied from FacilMap API
+			function makeAbsoluteURL(url) {
+				// See http://stackoverflow.com/questions/470832/getting-an-absolute-url-from-a-relative-one-ie6-issue/472729#472729
+				var el = document.createElement("div");
+				el.innerHTML = "<a href=\"" + url.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;") + "\">x</a>";
+				return el.firstChild.href;
+			}
+
+			function loadJavaScript(url, loadCheck, success) {
+				var load = true;
+				if(url == null || (loadCheck != null && loadCheck()))
+					load = false;
+				else
 				{
-					initMap();
-					document.getElementById("search-input").focus();
+					var scripts = document.getElementsByTagName("script");
+					for(var i=0; i<scripts.length; i++)
+					{
+						if(makeAbsoluteURL(scripts[i].src) == makeAbsoluteURL(url))
+						{
+							load = false;
+							break;
+						}
+					}
+				}
+
+				if(load)
+				{
+					var scriptTag = document.createElement("script");
+					scriptTag.type = "text/javascript";
+					scriptTag.src = url;
+					document.getElementsByTagName("head")[0].appendChild(scriptTag);
+				}
+
+				if(loadCheck != null && success != null)
+				{
+					var callback = function(nextWait) {
+						if(loadCheck())
+							success();
+						else
+						{
+							var newWait = nextWait*2;
+							if(newWait > 10000)
+								newWait = 10000;
+							setTimeout(function(){ callback(newWait); }, nextWait);
+						}
+					};
+					callback(10);
 				}
 			};
-			FacilMap.Util.loadJavaScript("http://api.facilmap.org/openstreetbugs/openstreetbugs.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
-			FacilMap.Util.loadJavaScript("http://api.facilmap.org/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
-			FacilMap.Util.loadJavaScript("map.js", function() { return window.initMap != undefined; }, oneLoaded);
+
+			var toLoad = 4;
+			var oneLoaded = function() {
+				switch(--toLoad)
+				{
+					case 2:
+						loadJavaScript("http://api.facilmap.org/facilmap.js", function() { return window.FacilMap != undefined; }, oneLoaded); /*
+						loadJavaScript("http://api.facilmap.org/facilmap_src.js", function() { return window.FacilMap != undefined; }, oneLoaded); // */
+						loadJavaScript("http://api.facilmap.org/osblayer/osblayer.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
+						break;
+					case 0:
+						loadJavaScript("map.js", function() { return window.initMap != undefined; }, function() {
+							initMap();
+							document.getElementById("search-input").focus();
+						});
+						break;
+				}
+			};
+
+			loadJavaScript("http://www.openlayers.org/api/OpenLayers.js", function() { return window.OpenLayers != undefined; }, oneLoaded); /*
+			loadJavaScript("openlayers/OpenLayers.js", function() { return window.OpenLayers != undefined; }, oneLoaded); // */
+			loadJavaScript("http://api.facilmap.org/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
 		// ]]>
 		</script>
 		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxT9Os3n_HQD4ATZq_2B5J8ffa0H_RTkd5XAs6VL9qzpi_zJeEmkjzZajQ"></script>
