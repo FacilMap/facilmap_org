@@ -17,6 +17,9 @@
 	Obtain the source code from http://gitorious.org/facilmap.
 */
 
+var esc = FacilMap.Util.htmlspecialchars;
+var _ = OpenLayers.i18n;
+
 var mapObject;
 var layerResults;
 var layerRouting;
@@ -37,162 +40,69 @@ function initMap()
 		return;
 	}
 
-	var form_el = document.createElement("form");
-	form_el.method = "get";
-	form_el.action = "";
-	form_el.id = "search";
-	form_el.onsubmit = function(){ geoSearch(); return false; };
-	var el1,el2,el3,el4;
-	el1 = document.createElement("dl");
-	el2 = document.createElement("dt");
-	el3 = document.createElement("label");
-	el3.htmlFor = "search-input";
-	el3.appendChild(document.createTextNode(OpenLayers.i18n("Search")));
-	el2.appendChild(el3);
-	el1.appendChild(el2);
-	el2 = document.createElement("dd");
-	el3 = document.createElement("input");
-	el3.type = "text";
-	el3.id = "search-input";
-	el3.name = "q";
-	el3.title = OpenLayers.i18n("Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”.");
-	el2.appendChild(el3);
-	el1.appendChild(el2);
+	$("#map").after('<form method="get" action="" id="search">' +
+		'<dl>' +
+			'<dt><label for="search-input">'+esc(_("Search"))+'</label></dt>' +
+			'<dd><input type="text" id="search-input" name="q" title="'+esc(_("Enter a search string, a URL of a GPX, KML, OSM or GML file or an OSM object like “node 123” or “trace 123”."))+'" /></dd>' +
+			'<dt><label for="search-target-input">'+esc(_("Destination"))+'</label></dt>' +
+			'<dd><input type="text" id="search-target-input" name="target" /><dd>' +
+		'</dl>' +
+		'<ul>' +
+			'<li><input type="submit" id="search-button" value="'+esc(_("Search"))+'" /></li>' +
+			'<li><input type="button" id="search-button-reset" value="'+esc(_("Clear"))+'" /></li>' +
+			'<li><select id="search-route-type">' +
+				'<option value="'+esc(FacilMap.Routing.Type.FASTEST)+'">'+esc(_("Fastest"))+'</option>' +
+				'<option value="'+esc(FacilMap.Routing.Type.SHORTEST)+'">'+esc(_("Shortest"))+'</option>' +
+			'</select></li>' +
+			'<li><select id="search-route-medium">' +
+				'<option value="'+esc(FacilMap.Routing.Medium.CAR)+'">'+esc(_("Car"))+'</option>' +
+				'<option value="'+esc(FacilMap.Routing.Medium.BICYCLE)+'">'+esc(_("Bicycle"))+'</option>' +
+				'<option value="'+esc(FacilMap.Routing.Medium.FOOT)+'">'+esc(_("Foot"))+'</option>' +
+			'</select></li>' +
+		'</ul>' +
+		'<div id="search-toggle-routing"><a href="javascript:undefined"> </a></div>' + // Text is added in hideRoutingForm()
+		'<p id="search-osm-cc">'+_("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>")+'</p>' +
+		'<ul id="search-route-info"></ul>' +
+		'<div id="search-results-toggle"><a href="javascript:undefined">'+esc(_("Hide results"))+'</a></div>' +
+		'<div id="search-results"></div>' +
+		'<div id="search-target-results"></div>'
+	);
 
-	el2 = document.createElement("dt");
-	el3 = document.createElement("label");
-	el3.htmlFor = "search-target-input";
-	el3.appendChild(document.createTextNode(OpenLayers.i18n("Destination")));
-	el2.appendChild(el3);
-	el1.appendChild(el2);
-	el2 = document.createElement("dd");
-	el3 = document.createElement("input");
-	el3.type = "text";
-	el3.id = "search-target-input";
-	el3.name = "target";
-	el2.appendChild(el3);
-	el1.appendChild(el2);
+	$("#search").submit(
+		function(){ geoSearch(); return false; }
+	).mouseover(
+		function(){ FacilMap.Util.changeOpacity(this, 1); FacilMap.Util.changeOpacity($("#search-osm-cc")[0], 1); }
+	).mouseout(
+		function(){ FacilMap.Util.changeOpacity(this, 0.5); FacilMap.Util.changeOpacity($("#search-osm-cc")[0], 0.3); }
+	).mouseout();
+	$("#search-button-reset").click(function(){ $("#search-input,#search-target-input").val(""); $(this.form).submit(); return false; });
 
-	form_el.appendChild(el1);
+	var switchType = function() { if(layerRouting != null && layerRouting.provider.routingType != this.value) layerRouting.setType(this.value); };
+	$("#search-route-type").bind({ 'change' : switchType, 'keyup' : switchType, 'click' : switchType });
+	var switchMedium = function() { if(layerRouting != null && layerRouting.provider.medium != this.value) layerRouting.setMedium(this.value); };
+	$("#search-route-medium").bind({ 'change' : switchMedium, 'keyup' : switchMedium, 'click' : switchMedium });
 
-	el1 = document.createElement("ul");
-	el2 = document.createElement("li");
-	el3 = document.createElement("input");
-	el3.type = "submit";
-	el3.id = "search-button";
-	el3.value = OpenLayers.i18n("Search");
-	el2.appendChild(el3);
-	el1.appendChild(el2);
-	el2 = document.createElement("li");
-	el3 = document.createElement("input");
-	el3.type = "button";
-	el3.id = "search-button-reset";
-	el3.onclick = function(){ document.getElementById("search-input").value = document.getElementById("search-target-input").value = ""; this.form.onsubmit(); return false; };
-	el3.value = OpenLayers.i18n("Clear");
-	el2.appendChild(el3);
-	el1.appendChild(el2);
+	$("#search-results-toggle,#search-results,#search-target-results,#search-route-info").css("display", "none");
 
-	el2 = document.createElement("li");
-	el3 = document.createElement("select");
-	el3.id = "search-route-type";
-	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.routingType != this.value) layerRouting.setType(this.value); };
-	el4 = document.createElement("option");
-	el4.value = FacilMap.Routing.Type.FASTEST;
-	el4.appendChild(document.createTextNode(OpenLayers.i18n("Fastest")));
-	el3.appendChild(el4);
-	el4 = document.createElement("option");
-	el4.value = FacilMap.Routing.Type.SHORTEST;
-	el4.appendChild(document.createTextNode(OpenLayers.i18n("Shortest")));
-	el3.appendChild(el4);
-	el2.appendChild(el3);
-	el1.appendChild(el2);
-
-	el2 = document.createElement("li");
-	el3 = document.createElement("select");
-	el3.id = "search-route-medium";
-	el3.onchange = el3.onkeyup = el3.onclick = function() { if(layerRouting != null && layerRouting.provider.medium != this.value) layerRouting.setMedium(this.value); };
-	el4 = document.createElement("option");
-	el4.value = FacilMap.Routing.Medium.CAR;
-	el4.appendChild(document.createTextNode(OpenLayers.i18n("Car")));
-	el3.appendChild(el4);
-	el4 = document.createElement("option");
-	el4.value = FacilMap.Routing.Medium.BICYCLE;
-	el4.appendChild(document.createTextNode(OpenLayers.i18n("Bicycle")));
-	el3.appendChild(el4);
-	el4 = document.createElement("option");
-	el4.value = FacilMap.Routing.Medium.FOOT;
-	el4.appendChild(document.createTextNode(OpenLayers.i18n("Foot")));
-	el3.appendChild(el4);
-	el2.appendChild(el3);
-	el1.appendChild(el2);
-
-	form_el.appendChild(el1);
-
-	el1 = document.createElement("div");
-	el1.id = "search-toggle-routing";
-	el2 = document.createElement("a");
-	el2.href = "javascript:undefined";
-	el2.appendChild(document.createTextNode("")); // Is added in hideRoutingForm()
-	el1.appendChild(el2);
-	form_el.appendChild(el1);
-
-	var osmcc = document.createElement("p");
-	osmcc.id = "search-osm-cc";
-	osmcc.innerHTML = OpenLayers.i18n("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>");
-	form_el.appendChild(osmcc);
-
-	form_el.onmouseover = function(){ FacilMap.Util.changeOpacity(this, 1); FacilMap.Util.changeOpacity(osmcc, 1); };
-	form_el.onmouseout = function(){ FacilMap.Util.changeOpacity(this, 0.5); FacilMap.Util.changeOpacity(osmcc, 0.3); };
-	form_el.onmouseout();
-
-	el1 = document.createElement("ul");
-	el1.id = "search-route-info";
-	el1.style.display = "none";
-	form_el.appendChild(el1);
-
-	el1 = document.createElement("div");
-	el1.id = "search-results";
-	el1.style.display = "none";
-
-	el2 = document.createElement("div");
-	el2.id = "search-results-toggle";
-	el3 = document.createElement("a");
-	el3.href = "javascript:undefined";
-	el3.onclick = function() {
-		if(searchResults.style.display == "none")
+	$("#search-results-toggle a").click(function() {
+		if($("#search-results").css("display") == "none")
 		{
-			this.firstChild.data = OpenLayers.i18n("Show results");
-			searchResults.style.display = "block";
-			if(document.getElementById("search-target-input").style.display != "none")
-				searchTargetResults.parentNode.style.display = "block";
+			this.firstChild.data = _("Show results");
+			$("#search-results").css("display", "block");
+			if($("#search-target-input").css("display") != "none")
+				$("#search-target-results").css("display", "block");
 		}
 		else
 		{
-			this.firstChild.data = OpenLayers.i18n("Hide results");
-			searchResults.style.display = "none";
-			searchTargetResults.parentNode.style.display = "none";
+			this.firstChild.data = _("Hide results");
+			$("#search-results,#search-target-results").css("display", "none");
 		}
-	};
-	el3.appendChild(document.createTextNode(OpenLayers.i18n("Hide results")));
-	el2.appendChild(el3);
-	el1.appendChild(el2);
+	});
 
 	searchResults = document.createElement("ol");
-	el1.appendChild(searchResults);
-
-	form_el.appendChild(el1);
-
-	el1 = document.createElement("div");
-	el1.id = "search-target-results";
-	el1.style.display = "none";
-
-	el2 = document.createElement("div");
+	$("#search-results").append(searchResults);
 	searchTargetResults = document.createElement("ol");
-	el1.appendChild(searchTargetResults);
-
-	form_el.appendChild(el1);
-
-	FacilMap.Util.domInsertAfter(form_el, document.getElementById("map"));
+	$("#search-target-results").append(searchTargetResults);
 
 	hideRoutingForm();
 
@@ -226,19 +136,19 @@ function initMap()
 	}
 
 	var toolbar = new OpenLayers.Control.Panel();
-	var moveControl = new OpenLayers.Control({ title : OpenLayers.i18n("Move map") });
+	var moveControl = new OpenLayers.Control({ title : _("Move map") });
 	mapObject.addControl(moveControl);
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs(OpenLayers.i18n("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
+	var osb = new OpenLayers.Layer.OpenStreetBugs(_("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
 	mapObject.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
 	mapObject.addControl(osbControl);
 	toolbar.addControls(osbControl);
 
-	var layerMarkers = new FacilMap.Layer.Markers.LonLat(OpenLayers.i18n("Markers"), { shortName : "m", saveInPermalink : true });
+	var layerMarkers = new FacilMap.Layer.Markers.LonLat(_("Markers"), { shortName : "m", saveInPermalink : true });
 	mapObject.addLayer(layerMarkers);
 	var markerControl = new FacilMap.Control.CreateMarker(layerMarkers);
 	mapObject.addControl(markerControl);
@@ -265,11 +175,11 @@ function initMap()
 	};
 
 	nameFinder = new FacilMap.NameFinder.Nominatim();
-	layerResults = new FacilMap.Layer.Markers.GeoSearch(OpenLayers.i18n("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
+	layerResults = new FacilMap.Layer.Markers.GeoSearch(_("Search results"), nameFinder, { shortName : "s", saveInPermalink : true });
 	mapObject.addLayer(layerResults);
 
-	nameFinder.initAutoSuggest(document.getElementById("search-input"));
-	nameFinder.initAutoSuggest(document.getElementById("search-target-input"));
+	nameFinder.initAutoSuggest($("#search-input")[0]);
+	nameFinder.initAutoSuggest($("#search-target-input")[0]);
 
 	addingLayers = false;
 	var hashHandler = new FacilMap.Control.URLHashHandler({
@@ -281,18 +191,18 @@ function initMap()
 				if(query_object.target != undefined && query_object.target != "%s")
 				{
 					showRoutingForm();
-					document.getElementById("search-target-input").value = query_object.target;
+					$("#search-target-input").val(query_object.target);
 					if(query_object.l != undefined && query_object.l.r != undefined)
 						delete query_object.l.r;
 				}
-				document.getElementById("search-input").value = query_object.q;
+				$("#search-input").val(query_object.q);
 				if(query_object.l != undefined && query_object.l.s != undefined)
 					delete query_object.l.s;
 				geoSearch();
 			}
 
 			if(query_object.l != undefined && query_object.l.s != undefined)
-				document.getElementById("search-input").value = query_object.l.s.search;
+				$("#search-input").val(query_object.l.s.search);
 
 			if(query_object.l != undefined && query_object.l.r != undefined)
 			{
@@ -300,13 +210,13 @@ function initMap()
 				createRoutingLayer();
 
 				if(query_object.l.r.type != undefined)
-					document.getElementById("search-route-type").value = query_object.l.r.type;
+					$("#search-route-type").val(query_object.l.r.type);
 				if(query_object.l.r.medium != undefined)
-					document.getElementById("search-route-medium").value = query_object.l.r.medium;
+					$("#search-route-medium").val(query_object.l.r.medium);
 				if(query_object.l.r.from != undefined && query_object.l.r.from.lon != undefined && query_object.l.r.from.lat != undefined)
-					document.getElementById("search-input").value = query_object.l.r.from.lat+","+query_object.l.r.from.lon;
+					$("#search-input").val(query_object.l.r.from.lat+","+query_object.l.r.from.lon);
 				if(query_object.l.r.to != undefined && query_object.l.r.to.lon != undefined && query_object.l.r.to.lat != undefined)
-					document.getElementById("search-target-input").value = query_object.l.r.to.lat+","+query_object.l.r.to.lon;
+					$("#search-target-input").val(query_object.l.r.to.lat+","+query_object.l.r.to.lon);
 			}
 			else
 			{
@@ -325,139 +235,81 @@ function initMap()
 
 	mapObject.addControl(new FacilMap.Control.GeoLocation());
 
-	if(!document.getElementsByClassName)
-	{
-		document.getElementsByClassName = function(className) {
-			var ret = [ ];
-			var els = document.getElementsByTagName("*");
-			for(var i=0; i<els.length; i++)
-			{
-				var classNames = els[i].className.split(/\s+/);
-				for(var j=0; j<classNames.length; j++)
-				{
-					if(classNames[j] == className)
-					{
-						ret.push(els[i]);
-						break;
-					}
-				}
-			}
-			return ret;
-		};
-	}
-
-	var els = document.getElementsByClassName("olControlPanel");
-	for(var i=0; i<els.length; i++)
-	{
-		els[i].onmouseover = function(){ FacilMap.Util.changeOpacity(this, 1); }
-		els[i].onmouseout = function(){ FacilMap.Util.changeOpacity(this, 0.5); }
-		els[i].onmouseout();
-	}
+	$(".olControlPanel").mouseover(
+		function(){ FacilMap.Util.changeOpacity(this, 1); }
+	).mouseout(
+		function(){ FacilMap.Util.changeOpacity(this, 0.5); }
+	).mouseout();
 }
 
 function onSearchStart()
 {
-	document.getElementById("search-input").disabled =
-	document.getElementById("search-target-input").disabled =
-	document.getElementById("search-route-type").disabled =
-	document.getElementById("search-route-medium").disabled =
-	document.getElementById("search-button").disabled =
-	document.getElementById("search-button-reset").disabled = true;
+	var els = $("#search input,#search select");
+	for(var i=0; i<els.length; i++)
+		els[i].disabled = true;
 }
 
 function onSearchEnd()
 {
-	document.getElementById("search-input").disabled =
-	document.getElementById("search-target-input").disabled =
-	document.getElementById("search-route-type").disabled =
-	document.getElementById("search-route-medium").disabled =
-	document.getElementById("search-button").disabled =
-	document.getElementById("search-button-reset").disabled = false;
+	var els = $("#search input,#search select");
+	for(var i=0; i<els.length; i++)
+		els[i].disabled = false;
 }
 
 function createRoutingLayer()
 {
 	if(layerRouting == null)
 	{
-		layerRouting = new FacilMap.Layer.XML.Routing(OpenLayers.i18n("Directions"), { shortName : "r", saveInPermalink : true });
+		layerRouting = new FacilMap.Layer.XML.Routing(_("Directions"), { shortName : "r", saveInPermalink : true });
 		mapObject.addLayer(layerRouting);
 
-		layerRouting.setType(document.getElementById("search-route-type").value);
-		layerRouting.setMedium(document.getElementById("search-route-medium").value);
+		layerRouting.setType($("#search-route-type").val());
+		layerRouting.setMedium($("#search-route-medium").val());
 
 		layerRouting.events.register("loadstart", layerRouting, function() {
 			onSearchStart();
-			document.getElementById("search-route-info").style.display = "none";
+			$("#search-route-info").css("display", "none");
 		});
 		layerRouting.events.register("allloadend", layerRouting, function() {
 			onSearchEnd();
 
-			var info = document.getElementById("search-route-info");
-			while(info.firstChild)
-				info.removeChild(info.firstChild);
-			info.style.display = "block";
-
 			var distance = this.getDistance();
 			var duration = this.getDuration();
 			var detailedLink = this.getDetailedLink();
-			var el1,el2;
+
+			var info = $("search-route-info");
+			info.empty().css("display", "block");
 
 			if(distance != null)
-			{
-				el1 = document.createElement("li");
-				el1.appendChild(document.createTextNode(OpenLayers.i18n("Distance")+": "+(Math.round(distance*10)/10)+"\u2009"));
-				el2 = document.createElement("abbr");
-				el2.title = OpenLayers.i18n("kilometers");
-				el2.appendChild(document.createTextNode("km"));
-				el1.appendChild(el2);
-				info.appendChild(el1);
-			}
+				info.append('<li>'+esc(_("Distance"))+': '+(Math.round(distance*10)/10)+"\u2009"+'<abbr title="'+esc(_("kilometers"))+'">km</abbr></li>');
 
 			if(duration != null)
 			{
-				el1 = document.createElement("li");
 				var minutes = Math.round(duration*60)%60;
 				if(minutes < 10)
 					minutes = "0"+minutes;
-				el1.appendChild(document.createTextNode(OpenLayers.i18n("Duration")+": "+Math.floor(duration)+":"+minutes+"\u2009"));
-				el2 = document.createElement("abbr");
-				el2.title = OpenLayers.i18n("hours");
-				el2.appendChild(document.createTextNode("h"));
-				el1.appendChild(el2);
-				info.appendChild(el1);
+				info.append('<li>'+esc(_("Duration"))+': '+Math.floor(duration)+':'+minutes+"\u2009"+'<abbr title="'+esc(_("hours"))+'">h</abbr></li>');
 			}
 
 			if(detailedLink != null)
-			{
-				el1 = document.createElement("li");
-				el2 = document.createElement("a");
-				el2.href = detailedLink;
-				el2.appendChild(document.createTextNode(OpenLayers.i18n("Detailed driving instructions")));
-				el1.appendChild(el2);
-				info.appendChild(el1);
-			}
+				info.append('<li><a href="'+esc(detailedLink)+'">'+esc(_("Detailed driving instructions"))+'</a></li>');
 
 			if(layerRouting.provider.reorderViaPoints != FacilMap.Routing.prototype.reorderViaPoints && layerRouting.provider.via.length >= 2)
 			{
-				el1 = document.createElement("li");
-				el2 = document.createElement("a");
-				el2.href = "#";
-				el2.onclick = function() {
+				info.append('<li><a href="#" id="search-optimise-link">'+esc(_("Optimise route points"))+'</a></li>');
+				$("#search-optimise-link").click(function() {
 					onSearchStart();
 					layerRouting.reorderViaPoints(function(error) {
-						if(error)alert(error);
+						if(error) alert(error);
 						onSearchEnd();
 					});
 					return false;
-				};
-				el2.appendChild(document.createTextNode(OpenLayers.i18n("Optimise route points")));
-				el1.appendChild(el2);
-				info.appendChild(el1);
+				});
 			}
 		});
 		layerRouting.events.register("draggedRoute", layerRouting, function() {
-			document.getElementById("search-input").value = this.provider.from.lat+","+this.provider.from.lon;
-			document.getElementById("search-target-input").value = this.provider.to.lat+","+this.provider.to.lon;
+			$("#search-input").val(this.provider.from.lat+","+this.provider.from.lon);
+			$("#search-target-input").val(this.provider.to.lat+","+this.provider.to.lon);
 		});
 	}
 }
@@ -475,47 +327,36 @@ function removeRoutingLayer()
 
 function showRoutingForm()
 {
-	document.getElementById("search-route-type").parentNode.style.display =
-	document.getElementById("search-route-medium").parentNode.style.display = "inline";
-	document.getElementById("search-target-input").style.display = "block";
-	searchTargetResults.parentNode.style.display = searchResults.parentNode.style.display;
-	document.getElementById("search-button").value = OpenLayers.i18n("Get directions");
-	document.getElementById("search-toggle-routing").firstChild.firstChild.data = OpenLayers.i18n("Hide directions");
-	document.getElementById("search-toggle-routing").firstChild.onclick = function() { hideRoutingForm(); };
+	$("#search-route-type,#search-route-medium").parent().css("display", "inline");
+	$("#search-target-input").css("display", "block");
+	$("#search-target-results").css("display", $("#search-results").css("display"));
+	$("#search-button").val(_("Get directions"));
+	$("#search-toggle-routing a").text(_("Hide directions")).click(function() { hideRoutingForm(); });
 }
 
 function hideRoutingForm()
 {
-	document.getElementById("search-route-type").parentNode.style.display =
-	document.getElementById("search-route-medium").parentNode.style.display =
-	document.getElementById("search-target-input").style.display =
-	searchTargetResults.parentNode.style.display = "none";
-	document.getElementById("search-button").value = OpenLayers.i18n("Search");
-	document.getElementById("search-toggle-routing").firstChild.firstChild.data = OpenLayers.i18n("Get directions");
-	document.getElementById("search-toggle-routing").firstChild.onclick = function() { showRoutingForm(); };
+	$("#search-route-type,#search-route-medium").parent().add("#search-target-input").css("display", "none");
+	$("#search-button").val(_("Search"));
+	$("#search-toggle-routing a").text(_("Get directions")).click(function() { showRoutingForm(); });
 
 	if(layerRouting)
 	{
 		removeRoutingLayer();
-		var search = document.getElementById("search-input").value;
-		document.getElementById("search-input").value = "";
+		var search = $("#search-input").val();
+		$("#search-input").val("");
 		geoSearch();
-		document.getElementById("search-input").value = search;
+		$("#search-input").val(search);
 	}
 }
 
 function geoSearch()
 {
-	var search = document.getElementById("search-input").value.replace(/^\s+/, "").replace(/\s+$/, "");
-	var searchTarget = document.getElementById("search-target-input").value.replace(/^\s+/, "").replace(/\s+$/, "");
+	var search = $("#search-input").val().replace(/^\s+/, "").replace(/\s+$/, "");
+	var searchTarget = $("#search-target-input").val().replace(/^\s+/, "").replace(/\s+$/, "");
 	layerResults.showResults([ ]);
-	while(searchResults.firstChild)
-		searchResults.removeChild(searchResults.firstChild);
-	while(searchTargetResults.firstChild)
-		searchTargetResults.removeChild(searchTargetResults.firstChild);
-	searchResults.parentNode.style.display = "none";
-	searchTargetResults.parentNode.style.display = "none";
-	document.getElementById("search-route-info").style.display = "none";
+	$("#search-results-toggle,#search-results,#search-target-results,#search-route-info").css("display", "none");
+	$(searchResults).add(searchTargetResults).empty();
 
 	isRoutingSearch = false;
 	removeRoutingLayer();
@@ -532,7 +373,7 @@ function geoSearch()
 		if(m = search.match(/[#?](.*)$/))
 		{
 			var query_string = FacilMap.Util.decodeQueryString(m[1]);
-			if(typeof query_string.lon == "undefined" || typeof query_string.lat == "undefined")
+			if(query_string.lon == undefined || query_string.lat == undefined)
 				gpx = true;
 		}
 		else
@@ -569,7 +410,7 @@ function geoSearch()
 	}
 	else
 	{
-		if(searchTarget != "" && document.getElementById("search-target-input").style.display != "none")
+		if(searchTarget != "" && $("#search-target-input").css("display") != "none")
 		{
 			isRoutingSearch = true;
 			createRoutingLayer();
@@ -580,10 +421,10 @@ function geoSearch()
 				layerResults.showResults(results, search);
 
 			if(results == undefined || results.length == 0)
-				alert(OpenLayers.i18n("No results."));
+				alert(_("No results."));
 			else
 			{
-				for(var i=0; i<results.length; i++)
+				for(var i=0; i<results.length; i++) (function(i)
 				{
 					results[i].showOnMap = function() {
 						for(var j=0; j<layerResults.markers.length; j++)
@@ -599,31 +440,19 @@ function geoSearch()
 
 					if(results.length > 1)
 					{
-						var li = document.createElement("li");
-						var a = document.createElement("a");
-						a.href = "javascript:undefined";
-						(function(result) {
-							a.onclick = function() { result.showOnMap() };
-						})(results[i]);
-						a.appendChild(document.createTextNode(results[i].name));
-						li.appendChild(a);
-						li.appendChild(document.createTextNode(" "));
-						var span = document.createElement("span");
-						span.className = "search-result-info";
-						span.appendChild(document.createTextNode("("+results[i].info+")"));
-						li.appendChild(span);
-						searchResults.appendChild(li);
+						$(searchResults).append("<li><a href=\"javascript:undefined\" id=\"search-result-"+i+"\">"+esc(results[i].name)+"</a> <span class=\"search-result-info\">("+esc(results[i].info)+")</span></li>");
+						$("#search-result-"+i).click(function() { results[i].showOnMap() });
 					}
-				}
+				})(i);
 
 				if(isRoutingSearch)
 					results[0].showOnMap();
 
 				if(results.length > 1)
 				{
-					searchResults.parentNode.style.display = "block";
-					if(document.getElementById("search-target-input").style.display != "none")
-						searchTargetResults.parentNode.style.display = "block";
+					$("#search-results-toggle,#search-results").css("display", "block");
+					if($("#search-target-input").css("display") != "none")
+						$("#search-target-results").css("display", "block");
 				}
 			}
 
@@ -631,8 +460,8 @@ function geoSearch()
 				onSearchEnd();
 		};
 
-		/*if(document.getElementById("search-input").fmAutocompleteSelected != null)
-			searchCallback([ document.getElementById("search-input").fmAutocompleteSelected ]);
+		/*if($("#search-input")[0].fmAutocompleteSelected != null)
+			searchCallback([ $("#search-input")[0].fmAutocompleteSelected ]);
 		else*/
 			nameFinder.find(search, searchCallback);
 
@@ -641,12 +470,12 @@ function geoSearch()
 			var searchTargetCallback = function(results){
 				if(results == undefined || results.length == 0)
 				{
-					alert(OpenLayers.i18n("No results."));
+					alert(_("No results."));
 					onSearchEnd();
 				}
 				else
 				{
-					for(var i=0; i<results.length; i++)
+					for(var i=0; i<results.length; i++) (function(i)
 					{
 						results[i].showOnMap = function() {
 							layerRouting.setTo(this.lonlat, true);
@@ -654,35 +483,20 @@ function geoSearch()
 
 						if(results.length > 1)
 						{
-							var li = document.createElement("li");
-							var a = document.createElement("a");
-							a.href = "javascript:undefined";
-							(function(result) {
-								a.onclick = function() { result.showOnMap() };
-							})(results[i]);
-							a.appendChild(document.createTextNode(results[i].name));
-							li.appendChild(a);
-							li.appendChild(document.createTextNode(" "));
-							var span = document.createElement("span");
-							span.className = "search-result-info";
-							span.appendChild(document.createTextNode("("+results[i].info+")"));
-							li.appendChild(span);
-							searchTargetResults.appendChild(li);
+							$(searchTargetResults).append("<li><a href=\"javascript:undefined\" id=\"search-target-result-"+i+"\">"+esc(results[i].name)+"</a> <span class=\"search-result-info\">("+esc(results[i].info)+")</span></li>");
+							$("#search-target-result-"+i).click(function() { results[i].showOnMap() });
 						}
-					}
+					})(i);
 				}
 
 				results[0].showOnMap();
 
 				if(results.length > 1)
-				{
-					searchResults.parentNode.style.display = "block";
-					searchTargetResults.parentNode.style.display = "block";
-				}
+					$("#search-results-toggle,#search-results,#search-target-results").css("display", "block");
 			};
 
-			/*if(document.getElementById("search-target-input").fmAutocompleteSelected != null)
-				searchTargetCallback([ document.getElementById("search-target-input").fmAutocompleteSelected ]);
+			/*if($("#search-target-input")[0].fmAutocompleteSelected != null)
+				searchTargetCallback([ $("#search-target-input")[0].fmAutocompleteSelected ]);
 			else*/
 				nameFinder.find(searchTarget, searchTargetCallback);
 		}

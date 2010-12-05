@@ -79,8 +79,6 @@
 			fieldset.content-hidden .fieldset-content { display:none; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap Beta" />
-		<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-		<script type="text/javascript" src="api/facilmap_debug.js"></script>
 	</head>
 	<body>
 		<div id="map"></div>
@@ -136,27 +134,63 @@
 				}
 			};
 
-			var toLoad = 4;
-			var oneLoaded = function() {
-				switch(--toLoad)
-				{
-					case 2:
-						loadJavaScript("http://api.facilmap.org/facilmap.js", function() { return window.FacilMap != undefined; }, oneLoaded); /*
-						loadJavaScript("http://api.facilmap.org/facilmap_src.js", function() { return window.FacilMap != undefined; }, oneLoaded); // */
-						loadJavaScript("http://api.facilmap.org/osblayer/osblayer.js", function() { return OpenLayers.Layer.OpenStreetBugs != undefined }, oneLoaded);
-						break;
-					case 0:
-						loadJavaScript("map.js", function() { return window.initMap != undefined; }, function() {
-							initMap();
-							document.getElementById("search-input").focus();
-						});
-						break;
+			var libs = {
+				"OpenLayers" : {
+					loaded : function() { return window.OpenLayers != undefined; },
+					url : "http://www.openlayers.org/api/OpenLayers.js" /*
+					url : "openlayers/OpenLayers.js" // */
+				},
+				"FacilMap" : {
+					loaded : function() { return window.FacilMap != undefined; },
+					depends : [ "OpenLayers" ],
+					url : "api/facilmap_src.js"
+				},
+				"osbLayer" : {
+					loaded : function() { return window.OpenLayers != undefined && OpenLayers.Layer.OpenStreetBugs != undefined },
+					depends : [ "OpenLayers" ],
+					url : "http://api.facilmap.org/osblayer/osblayer.js"
+				},
+				"ajax-proxy" : {
+					loaded : function() { return window.AjaxProxyXMLHttpRequest != undefined; },
+					url : "http://api.facilmap.org/ajax-proxy/ajax-proxy.js"
+				},
+				"jQuery" : {
+					loaded : function() { return window.jQuery != undefined; },
+					url : "jquery-1.4.4.min.js"
+				},
+				"map.js" : {
+					loaded : function() { return window.initMap != undefined; },
+					depends : [ "OpenLayers", "FacilMap", "osbLayer", "ajax-proxy" ],
+					url : "map.js"
 				}
 			};
 
-			loadJavaScript("http://www.openlayers.org/api/OpenLayers.js", function() { return window.OpenLayers != undefined; }, oneLoaded); /*
-			loadJavaScript("openlayers/OpenLayers.js", function() { return window.OpenLayers != undefined; }, oneLoaded); // */
-			loadJavaScript("http://api.facilmap.org/ajax-proxy/ajax-proxy.js", function() { return window.AjaxProxyXMLHttpRequest != undefined; }, oneLoaded);
+			var load = function() {
+				if(libs["map.js"].loaded())
+				{
+					initMap();
+					$("#search-input").focus();
+					return;
+				}
+
+				libsloop: for(var i in libs)
+				{
+					if(libs[i].loading)
+						continue;
+					if(libs[i].depends != null)
+					{
+						for(var j=0; j<libs[i].depends.length; j++)
+						{
+							if(!libs[libs[i].depends[j]].loaded())
+								continue libsloop;
+						}
+					}
+					libs[i].loading = true;
+					loadJavaScript(libs[i].url, libs[i].loaded, load);
+				}
+			};
+
+			load();
 		// ]]>
 		</script>
 		<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAApZR0PIISH23foUX8nxj4LxT9Os3n_HQD4ATZq_2B5J8ffa0H_RTkd5XAs6VL9qzpi_zJeEmkjzZajQ"></script>
