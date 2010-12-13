@@ -77,13 +77,46 @@
 			fieldset.content-hidden legend a:before { content:"+ "; color:#aaa; }
 			fieldset.content-visible legend a:before { content:"− "; color:#aaa; }
 			fieldset.content-hidden .fieldset-content { display:none; }
+
+			#pb { padding:20px; }
+			#pb1 { height:20px; width:250px; border:1px solid #004; border-radius:10px; -moz-border-radius:10px; background-color:#ccf; position:relative; }
+			#pb2 { position:absolute; top:-1px; bottom:-1px; right:-1px; left:10px; background-color:#fff; }
+			#pb3 { height:20px; width:100%; border:1px solid #004; border-left:none; border-radius:0 10px 10px 0; -moz-border-radius:0 10px 10px 0; }
+			#pb p { margin:5px 0 0 5px; padding:0; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap Beta" />
 	</head>
 	<body>
+		<div id="pb">
+			<div id="pb1"><div id="pb2"><div id="pb3"></div></div></div>
+			<p>Loading...</p>
+		</div>
 		<div id="map"></div>
 		<script type="text/javascript">
 		// <![CDATA[
+			var pb = document.getElementById("pb2");
+			var pbWidth = document.getElementById("pb1").offsetWidth-22;
+
+			var pbProg = 0;
+			var pbProgSet = 0;
+			var pbTimeout = null;
+			var pbOrigin = 0;
+
+			function updateProgress()
+			{
+				var speed = Math.min(pbProgSet-pbOrigin, pbProg-pbProgSet)/2;
+				if(speed < 0.01)
+					speed = 0.01;
+				pbProgSet += speed;
+				if(pbProgSet > pbProg)
+					pbProgSet = pbProg;
+				pb.style.left = (10+Math.round(pbWidth*pbProgSet))+"px";
+				if(pbProgSet < pbProg)
+					pbTimeout = setTimeout(updateProgress, 100);
+				else
+					pbOrigin = pbProg;
+			}
+
 			// Copied from FacilMap API
 			function makeAbsoluteURL(url) {
 				// See http://stackoverflow.com/questions/470832/getting-an-absolute-url-from-a-relative-one-ie6-issue/472729#472729
@@ -165,15 +198,15 @@
 			};
 
 			var load = function() {
-				if(libs["map.js"].loaded())
-				{
-					initMap();
-					$("#search-input").focus();
-					return;
-				}
+				var loaded = 0;
+				var number = 0;
 
 				libsloop: for(var i in libs)
 				{
+					number++;
+					if(libs[i].loaded())
+						loaded++;
+
 					if(libs[i].loading)
 						continue;
 					if(libs[i].depends != null)
@@ -186,6 +219,17 @@
 					}
 					libs[i].loading = true;
 					loadJavaScript(libs[i].url, libs[i].loaded, load);
+				}
+
+				pbProg = loaded/number;
+				updateProgress();
+
+				if(libs["map.js"].loaded())
+				{
+					initMap();
+					$("#search-input").focus();
+					$("#pb").css("display", "none");
+					return;
 				}
 			};
 
