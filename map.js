@@ -267,7 +267,7 @@ function createRoutingLayer()
 			var duration = this.getDuration();
 			var detailedLink = this.getDetailedLink();
 
-			var info = $("search-route-info");
+			var info = $("#search-route-info");
 			info.empty().css("display", "block");
 
 			if(distance != null)
