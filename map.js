@@ -219,8 +219,7 @@ function initMap()
 		}
 	});
 	mapObject.addControl(hashHandler);
-	if(location.hash == "" || location.hash == "#")
-		location.hash = "#lat=0;lon=0;zoom=2";
+	mapObject.zoomToQuery({ });
 	hashHandler.activate();
 
 	mapObject.addControl(new FacilMap.Control.GeoLocation());
