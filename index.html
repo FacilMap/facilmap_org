@@ -23,6 +23,15 @@
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 		<title>FacilMap Beta</title>
 		<meta name="description" content="FacilMap combines OpenStreetMap, Google and Yahoo maps into one simple map interface with useful tools and a search engine." />
+		<script type="text/javascript"> // <![CDATA[
+			if(location.search.length > 1 || location.host == "www.facilmap.org")
+			{ // Move query string to location hash part, remove www. from hostname
+				var hash = location.href.match(/#(.*)$/);
+				hash = hash ? hash[1] : "";
+				location.replace(location.protocol+"//"+(location.host == "www.facilmap.org" ? "facilmap.org" : location.host)+location.pathname+"#"+location.search.substr(1).replace("&", ";")+(location.search.length > 1 && hash.length > 0 ? ";" : "")+hash);
+			}
+		// ]]>
+		</script>
 		<style type="text/css">
 			html,body { margin:0; padding:0; border-style:none; position:absolute; top:0; left:0; height:100%; width:100%; color:#000; background:#fff; }
 			a { color:inherit; text-decoration:underline; }

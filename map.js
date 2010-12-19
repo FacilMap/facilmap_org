@@ -30,16 +30,6 @@ var isRoutingSearch = false;
 
 function initMap()
 {
-	if(location.search.length > 1)
-	{ // Move query string to location hash part
-		var search_obj = FacilMap.Util.decodeQueryString(location.search.substr(1));
-		var hash_obj = FacilMap.Util.decodeQueryString(FacilMap.URLHashHandler.prototype.getLocationHash());
-		for(var i in search_obj)
-			hash_obj[i] = search_obj[i];
-		location.replace(location.pathname+"#"+FacilMap.Util.encodeQueryString(hash_obj));
-		return;
-	}
-
 	$("#map").after('<form method="get" action="" id="search">' +
 		'<dl>' +
 			'<dt><label for="search-input">'+esc(_("Search"))+'</label></dt>' +
