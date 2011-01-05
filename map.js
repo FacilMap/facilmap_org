@@ -251,6 +251,16 @@ function showElevationProfile()
 	$("<div><img src=\""+esc(layerRouting.getElevationProfileURL(size))+"\" alt=\"\" style=\"width:"+size.w+"px; height:"+size.h+"px;\" /></div>").dialog({ width: "auto", modal: true, title: OpenLayers.i18n("Elevation profile") });
 }
 
+function fmAlert(text)
+{
+	$("<div></div>").text(text).dialog({ modal: true, title: OpenLayers.i18n("Alert") });
+}
+
+try {
+	window.alert = fmAlert;
+} catch(e) {
+}
+
 function createRoutingLayer()
 {
 	if(layerRouting == null)
@@ -298,7 +308,7 @@ function createRoutingLayer()
 				$("#search-optimise-link").click(function() {
 					onSearchStart();
 					layerRouting.reorderViaPoints(function(error) {
-						if(error) alert(error);
+						if(error) fmAlert(error);
 						onSearchEnd();
 					});
 					return false;
@@ -419,7 +429,7 @@ function geoSearch()
 				layerResults.showResults(results, search);
 
 			if(results == undefined || results.length == 0)
-				alert(_("No results."));
+				fmAlert(_("No results."));
 			else
 			{
 				for(var i=0; i<results.length; i++) (function(i)
@@ -468,7 +478,7 @@ function geoSearch()
 			var searchTargetCallback = function(results){
 				if(results == undefined || results.length == 0)
 				{
-					alert(_("No results."));
+					fmAlert(_("No results."));
 					onSearchEnd();
 				}
 				else
@@ -527,7 +537,8 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"kilometers" : "kilometers",
 	"hours" : "hours",
 	"Optimise route points" : "Optimise route points",
-	"Elevation profile" : "Elevation profile"
+	"Elevation profile" : "Elevation profile",
+	"Alert" : "Alert"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -556,5 +567,6 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"kilometers" : "Kilometer",
 	"hours" : "Stunden",
 	"Optimise route points" : "Routenpunkte optimieren",
-	"Elevation profile" : "Höhenprofil"
+	"Elevation profile" : "Höhenprofil",
+	"Alert" : "Meldung"
 });
