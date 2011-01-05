@@ -94,6 +94,10 @@
 			#pb2 { position:absolute; top:-1px; bottom:-1px; right:-1px; left:10px; background-color:#fff; }
 			#pb3 { height:20px; width:100%; border:1px solid #004; border-left:none; border-radius:0 10px 10px 0; -moz-border-radius:0 10px 10px 0; }
 			#pb p { margin:5px 0 0 5px; padding:0; }
+			#pb-list { list-style-type:none; margin:15px 5px; padding:0; color:#888; }
+			#pb-list li.loaded { color:#000; }
+			#pb-list li:after { content:"…"; }
+			#pb-list li.loaded:after { content:" ✔"; font-weight:bold; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap Beta" />
 		<link rel="stylesheet" type="text/css" href="jquery-ui-1.8.7.custom.css" />
@@ -102,6 +106,7 @@
 		<div id="pb">
 			<div id="pb1"><div id="pb2"><div id="pb3"></div></div></div>
 			<p>Loading...</p>
+			<ul id="pb-list"></ul>
 		</div>
 		<div id="map"></div>
 		<script type="text/javascript">
@@ -192,7 +197,8 @@
 				"osbLayer" : {
 					loaded : function() { return window.OpenLayers != undefined && OpenLayers.Layer.OpenStreetBugs != undefined },
 					depends : [ "OpenLayers" ],
-					url : "http://api.facilmap.org/osblayer/osblayer.js"
+					url : "http://api.facilmap.org/osblayer/osblayer.js",
+					title : "OpenStreetBugs layer"
 				},
 				"ajax-proxy" : {
 					loaded : function() { return window.AjaxProxyXMLHttpRequest != undefined; },
@@ -205,9 +211,10 @@
 				"jQueryUI" : {
 					loaded : function() { return window.jQuery != undefined && window.jQuery.prototype.dialog != undefined; },
 					depends : [ "jQuery" ],
-					url : "jquery-ui-1.8.7.custom.min.js"
+					url : "jquery-ui-1.8.7.custom.min.js",
+					title : "jQuery UI"
 				},
-				"map.js" : {
+				"map" : {
 					loaded : function() { return window.initMap != undefined; },
 					depends : [ "OpenLayers", "FacilMap", "osbLayer", "ajax-proxy", "jQuery", "jQueryUI" ],
 					url : "map.js",
@@ -215,9 +222,19 @@
 						initMap();
 						$("#search-input").focus();
 						$("#pb").css("display", "none");
-					}
+					},
+					title : "facilmap.org scripts"
 				}
 			};
+
+			var pbList = document.getElementById("pb-list");
+			for(var i in libs)
+			{
+				var li = document.createElement("li");
+				li.id = "pb-list-"+i;
+				li.appendChild(document.createTextNode(libs[i].title == null ? i : libs[i].title));
+				pbList.appendChild(li);
+			}
 
 			var load = function() {
 				var loaded = 0;
@@ -228,10 +245,12 @@
 					number++;
 					if(libs[i].loaded())
 					{
-						if(libs[i].onload != null)
+						if(!libs[i].processed)
 						{
-							libs[i].onload();
-							libs[i].onload = null;
+							libs[i].processed = true;
+							document.getElementById("pb-list-"+i).className = "loaded";
+							if(libs[i].onload != null)
+								libs[i].onload();
 						}
 						loaded++;
 					}
