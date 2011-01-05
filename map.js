@@ -61,9 +61,9 @@ function initMap()
 	$("#search").submit(
 		function(){ geoSearch(); return false; }
 	).mouseover(
-		function(){ FacilMap.Util.changeOpacity(this, 1); $("#search-osm-cc,#search-toggle-routing").each(function(){ FacilMap.Util.changeOpacity(this, 1) }); }
+		function(){ FacilMap.Util.changeOpacity(this, 1); $("#search-osm-cc,#search-toggle-routing,#search-route-info,#search-results,#search-target-results,#search-results-toggle").each(function(){ FacilMap.Util.changeOpacity(this, 1) }); }
 	).mouseout(
-		function(){ FacilMap.Util.changeOpacity(this, 0.5); $("#search-osm-cc,#search-toggle-routing").each(function(){ FacilMap.Util.changeOpacity(this, 0.3) }); }
+		function(){ FacilMap.Util.changeOpacity(this, 0.5); $("#search-osm-cc,#search-toggle-routing,#search-route-info,#search-results,#search-target-results,#search-results-toggle").each(function(){ FacilMap.Util.changeOpacity(this, 0.3) }); }
 	).mouseout();
 	$("#search-button-reset").click(function(){ $("#search-input,#search-target-input").val(""); $(this.form).submit(); return false; });
 
