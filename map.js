@@ -245,6 +245,12 @@ function onSearchEnd()
 		els[i].disabled = false;
 }
 
+function showElevationProfile()
+{
+	var size = new OpenLayers.Size(Math.round(window.innerWidth/2), Math.round(window.innerHeight/2));
+	$("<div><img src=\""+esc(layerRouting.getElevationProfileURL(size))+"\" alt=\"\" style=\"width:"+size.w+"px; height:"+size.h+"px;\" /></div>").dialog({ width: "auto", modal: true, title: OpenLayers.i18n("Elevation profile") });
+}
+
 function createRoutingLayer()
 {
 	if(layerRouting == null)
@@ -282,6 +288,9 @@ function createRoutingLayer()
 
 			if(detailedLink != null)
 				info.append('<li><a href="'+esc(detailedLink)+'">'+esc(_("Detailed driving instructions"))+'</a></li>');
+
+			if(layerRouting.provider.getElevationProfileURL != FacilMap.Routing.prototype.getElevationProfileURL)
+				info.append('<li><a href="javascript:showElevationProfile()">'+esc(_("Elevation profile"))+'</a></li>');
 
 			if(layerRouting.provider.reorderViaPoints != FacilMap.Routing.prototype.reorderViaPoints && layerRouting.provider.via.length >= 2)
 			{
@@ -517,7 +526,8 @@ OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
 	"Duration" : "Duration",
 	"kilometers" : "kilometers",
 	"hours" : "hours",
-	"Optimise route points" : "Optimise route points"
+	"Optimise route points" : "Optimise route points",
+	"Elevation profile" : "Elevation profile"
 });
 
 OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
@@ -545,5 +555,6 @@ OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
 	"Duration" : "Dauer",
 	"kilometers" : "Kilometer",
 	"hours" : "Stunden",
-	"Optimise route points" : "Routenpunkte optimieren"
+	"Optimise route points" : "Routenpunkte optimieren",
+	"Elevation profile" : "Höhenprofil"
 });

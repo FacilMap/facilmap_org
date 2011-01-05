@@ -43,7 +43,7 @@
 			ul.buttons { list-style-type:none; padding:0; margin:0 }
 			ul.buttons li { display:inline; margin:0; padding:0; }
 
-			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; z-index:100000; width:40em; }
+			#search { position:absolute; top:1em; left:55px; border:.3em dotted #000; padding:1em 1.5em; background:#fff; z-index:900; width:40em; }
 			#search dt { display:none; }
 			#search dl,#search ul { display:inline-block; vertical-align:top; }
 			#search dl { width:25em; }
@@ -94,6 +94,7 @@
 			#pb p { margin:5px 0 0 5px; padding:0; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap Beta" />
+		<link rel="stylesheet" type="text/css" href="jquery-ui-1.8.7.custom.css" />
 	</head>
 	<body>
 		<div id="pb">
@@ -199,10 +200,20 @@
 					loaded : function() { return window.jQuery != undefined; },
 					url : "jquery-1.4.4.min.js"
 				},
+				"jQueryUI" : {
+					loaded : function() { return window.jQuery != undefined && window.jQuery.prototype.dialog != undefined; },
+					depends : [ "jQuery" ],
+					url : "jquery-ui-1.8.7.custom.min.js"
+				},
 				"map.js" : {
 					loaded : function() { return window.initMap != undefined; },
-					depends : [ "OpenLayers", "FacilMap", "osbLayer", "ajax-proxy" ],
-					url : "map.js"
+					depends : [ "OpenLayers", "FacilMap", "osbLayer", "ajax-proxy", "jQuery", "jQueryUI" ],
+					url : "map.js",
+					onload : function() {
+						initMap();
+						$("#search-input").focus();
+						$("#pb").css("display", "none");
+					}
 				}
 			};
 
@@ -214,7 +225,14 @@
 				{
 					number++;
 					if(libs[i].loaded())
+					{
+						if(libs[i].onload != null)
+						{
+							libs[i].onload();
+							libs[i].onload = null;
+						}
 						loaded++;
+					}
 
 					if(libs[i].loading)
 						continue;
@@ -232,14 +250,6 @@
 
 				pbProg = loaded/number;
 				updateProgress();
-
-				if(libs["map.js"].loaded())
-				{
-					initMap();
-					$("#search-input").focus();
-					$("#pb").css("display", "none");
-					return;
-				}
 			};
 
 			load();
