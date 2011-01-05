@@ -40,7 +40,7 @@ function initMap()
 		'<ul>' +
 			'<li><input type="submit" id="search-button" value="'+esc(_("Search"))+'" /></li>' +
 			'<li><input type="button" id="search-button-reset" value="'+esc(_("Clear"))+'" /></li>' +
-			'<li><select id="search-route-type">' +
+			'<li id="search-route-type-li"><select id="search-route-type">' +
 				'<option value="'+esc(FacilMap.Routing.Type.FASTEST)+'">'+esc(_("Fastest"))+'</option>' +
 				'<option value="'+esc(FacilMap.Routing.Type.SHORTEST)+'">'+esc(_("Shortest"))+'</option>' +
 			'</select></li>' +
@@ -50,8 +50,8 @@ function initMap()
 				'<option value="'+esc(FacilMap.Routing.Medium.FOOT)+'">'+esc(_("Foot"))+'</option>' +
 			'</select></li>' +
 		'</ul>' +
-		'<div id="search-toggle-routing"><a href="javascript:undefined"> </a></div>' + // Text is added in hideRoutingForm()
 		'<p id="search-osm-cc">'+_("Search results from <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>")+'</p>' +
+		'<div id="search-toggle-routing"><a href="javascript:undefined"> </a></div>' + // Text is added in hideRoutingForm()
 		'<ul id="search-route-info"></ul>' +
 		'<div id="search-results-toggle"><a href="javascript:undefined">'+esc(_("Hide results"))+'</a></div>' +
 		'<div id="search-results"></div>' +
