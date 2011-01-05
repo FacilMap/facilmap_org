@@ -216,13 +216,8 @@
 				},
 				"map" : {
 					loaded : function() { return window.initMap != undefined; },
-					depends : [ "OpenLayers", "FacilMap", "osbLayer", "ajax-proxy", "jQuery", "jQueryUI" ],
+					depends : [ "OpenLayers", "FacilMap" ],
 					url : "map.js",
-					onload : function() {
-						initMap();
-						$("#search-input").focus();
-						$("#pb").css("display", "none");
-					},
 					title : "facilmap.org scripts"
 				}
 			};
@@ -235,6 +230,8 @@
 				li.appendChild(document.createTextNode(libs[i].title == null ? i : libs[i].title));
 				pbList.appendChild(li);
 			}
+
+			var mapInit = false;
 
 			var load = function() {
 				var loaded = 0;
@@ -271,6 +268,14 @@
 
 				pbProg = loaded/number;
 				updateProgress();
+
+				if(loaded == number && !mapInit)
+				{
+					mapInit = true;
+					initMap();
+					$("#search-input").focus();
+					$("#pb").css("display", "none");
+				}
 			};
 
 			load();
