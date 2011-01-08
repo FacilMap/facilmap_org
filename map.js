@@ -100,6 +100,18 @@ function initMap()
 
 	mapObject = new FacilMap.Map("map");
 
+	// Readd keyboard control without onlyOnMouseOver setting, as the map is full-screen
+	for(var i=0; i<mapObject.controls.length; i++)
+	{
+		if(mapObject.controls[i] instanceof FacilMap.Control.KeyboardDefaults)
+		{
+			mapObject.controls[i].deactivate();
+			mapObject.removeControl(mapObject.controls[i]);
+			i--;
+		}
+	}
+	mapObject.addControl(new FacilMap.Control.KeyboardDefaults({ onlyOnMouseOver : false }));
+
 	var addingLayers = true;
 	mapObject.setBaseLayer = function(layer) {
 		if(addingLayers)
