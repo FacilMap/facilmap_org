@@ -143,12 +143,16 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs(_("OpenStreetBugs"), { visibility: false, shortName: "OSBu" });
-	mapObject.addLayer(osb);
-
-	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
-	mapObject.addControl(osbControl);
-	toolbar.addControls(osbControl);
+	for(var i=0; i<mapObject.layers.length; i++)
+	{
+		if(mapObject.layers[i] instanceof FacilMap.Layer.Markers.OpenStreetBugs)
+		{
+			var osbControl = new OpenLayers.Control.OpenStreetBugs(mapObject.layers[i]);
+			mapObject.addControl(osbControl);
+			toolbar.addControls(osbControl);
+			break;
+		}
+	}
 
 	var layerMarkers = new FacilMap.Layer.Markers.LonLat(_("Markers"), { shortName : "m", saveInPermalink : true });
 	mapObject.addLayer(layerMarkers);
