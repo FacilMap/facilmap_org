@@ -143,7 +143,7 @@ function initMap()
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
-	var osb = new OpenLayers.Layer.OpenStreetBugs(_("OpenStreetBugs"), { visibility: false, theme: null, shortName: "OSBu" });
+	var osb = new OpenLayers.Layer.OpenStreetBugs(_("OpenStreetBugs"), { visibility: false, shortName: "OSBu" });
 	mapObject.addLayer(osb);
 
 	var osbControl = new OpenLayers.Control.OpenStreetBugs(osb);
