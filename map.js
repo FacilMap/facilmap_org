@@ -269,7 +269,7 @@ function showElevationProfile()
 
 function fmAlert(text)
 {
-	$("<div></div>").text(""+text).dialog({ modal: true, title: OpenLayers.i18n("Alert") });
+	$("<div></div>").text(""+text).dialog({ modal: true, title: OpenLayers.i18n("Alert"), buttons: { "OK" : function() { $(this).dialog("close"); } }});
 }
 
 try {
