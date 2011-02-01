@@ -55,8 +55,8 @@ function initMap()
 		'<ul id="search-route-info"></ul>' +
 		'<div id="search-results-toggle"><a href="javascript:undefined">'+esc(_("Hide results"))+'</a></div>' +
 		'<div id="search-results"></div>' +
-		'<div id="search-target-results"></div>'
-	);
+		'<div id="search-target-results"></div>' +
+	'</form>');
 
 	$("#search").submit(
 		function(){ geoSearch(); return false; }
