@@ -182,7 +182,7 @@
 						// (see http://perfectionkills.com/detecting-event-support-without-browser-sniffing/)
 						if(scriptTag.onload == undefined)
 							scriptTag.setAttribute("onload", "return true;");
-						if(scriptTag.onload != undefined)
+						if(typeof scriptTag.onload == "function")
 						{
 							var onloadSave = scriptTag.onload;
 							scriptTag.onload = function() { if(loadCheck()) success(); return onloadSave.apply(this, arguments); };
