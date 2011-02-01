@@ -511,9 +511,9 @@ function geoSearch()
 							$("#search-target-result-"+i).click(function() { results[i].showOnMap() });
 						}
 					})(i);
-				}
 
-				results[0].showOnMap();
+					results[0].showOnMap();
+				}
 
 				if(results.length > 1)
 					$("#search-results-toggle,#search-results,#search-target-results").css("display", "block");
