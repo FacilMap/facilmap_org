@@ -92,7 +92,31 @@ window.initMap = function()
 	
 	mapObject.addControl(new fm.Control.GeoLocation());
 	mapObject.addControl(new fm.Control.Search({ permalinkName : "s" }));
-	mapObject.addControl(new fm.Control.HistoryStateHandler({ autoActivate:true }));
+	
+	var historyStateHandler = new fm.Control.HistoryStateHandler({ autoActivate: true, prefixWithMapId: false });
+	// Patch q parameter for searching
+	historyStateHandler.stateHandler.getState = function() {
+		var obj = fm.HistoryStateHandler.prototype.getState.apply(this, arguments);
+		if(obj.q)
+		{
+			if(!obj.c) obj.c = { };
+			if(!obj.c.s) obj.c.s = { };
+			obj.c.s.query = obj.q;
+			delete obj.q
+		}
+		return obj;
+	};
+	historyStateHandler.stateHandler.setState = function(obj) {
+		if(obj.c && obj.c.s && obj.c.s.query != null)
+		{
+			obj.q = obj.c.s.query;
+			delete obj.c.s.query;
+		}
+		fm.HistoryStateHandler.prototype.setState.apply(this, [ obj ]);
+	};
+	mapObject.addControl(historyStateHandler);
+	
+	$("olMap .fmControlSearch .from").attr("name", "q");
 
 	$(".olControlPanel").mouseover(
 		function(){ fm.Util.changeOpacity(this, 1); }
