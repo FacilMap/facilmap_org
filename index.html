@@ -43,30 +43,6 @@
 			ul.buttons { list-style-type:none; padding:0; margin:0 }
 			ul.buttons li { display:inline; margin:0; padding:0; }
 
-			#search { position:absolute; top:1em; left:55px; border:.3em dotted #00272a; padding:1em 1.5em; background:#fff; z-index:900; max-width:40em; }
-			#search dt { display:none; }
-			#search dl,#search ul { display:inline-block; vertical-align:top; }
-			#search dl { width:25em; }
-			#search dl input { width:100%; }
-			#search ul { list-style-type:none; padding:0; margin:0; }
-			#search li { margin:0; padding:0; display:inline; }
-			#search-route-type-li:before { content:"\0a"; white-space:pre; }
-
-			#search-toggle-routing { font-weight:bold; margin-right:1ex; }
-			#search-osm-cc { position:absolute; right:1em; }
-
-			#search-results ol,#search-target-results ol { margin:0; padding:0; list-style-type:none; }
-			#search-results li,#search-target-results li { display:block; margin:.3em 0; }
-			#search-results a,#search-target-results a { font-weight:bold; }
-			#search-results-toggle a { height:0; overflow:hidden; display:block; }
-
-			#search #search-route-info { margin:.5em 0; }
-			#search-route-info li { display:block; font-weight:bold; }
-
-			#search-results-toggle a,#search-target-results { border-top:2px dotted; padding-top:.5em; margin-top:.5em; }
-
-			#search-osm-cc { margin:0; padding:0; font-size:.8em; font-style:italic; }
-
 			.marker-heading,.result-heading { margin:0 0 .5em 0; padding:0; font-size:1.2em; font-weight:bold; }
 			.result-heading { font-weight:normal; }
 			.result-heading a { font-size:.83em; }
@@ -79,10 +55,6 @@
 			.olControlItemActive,.olControlItemInactive { background-image:url("move.png"); }
 			.olControlOpenStreetBugsItemActive,.olControlOpenStreetBugsItemInactive { background-image:url(http://openstreetbugs.schokokeks.org/client/icon_error_add.png); }
 			.fmControlCreateMarkerItemActive,.fmControlCreateMarkerItemInactive { background-image:url(api/marker.png); }
-
-			#map .olControlAttribution { bottom:1.5em; text-shadow:#fff 1px 1px 0; }
-			#map .fmControlGeoLocation { position:absolute; font-size:smaller; right:3px; bottom:3em; text-shadow:#fff 1px 1px 0; }
-			#map .olControlMousePosition { text-shadow:#fff 1px 1px 0; }
 
 			fieldset.content-hidden { border-left:none; border-bottom:none; border-right:none; }
 			fieldset.content-hidden legend a:before { content:"+ "; color:#aaa; }
@@ -160,7 +132,6 @@
 						if(makeAbsoluteURL(scripts[i].src) == makeAbsoluteURL(url))
 						{
 							scriptTag = scripts[i];
-							load = false;
 							break;
 						}
 					}
