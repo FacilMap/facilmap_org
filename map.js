@@ -17,14 +17,11 @@
 	Obtain the source code from http://gitorious.org/facilmap.
 */
 
-var esc = FacilMap.Util.htmlspecialchars;
-var _ = OpenLayers.i18n;
+(function(fm, ol, $) {
 
-var mapObject;
-
-function initMap()
+window.initMap = function()
 {
-	mapObject = new FacilMap.Map("map");
+	window.mapObject = new fm.Map("map");
 
 	// Readd keyboard control without onlyOnMouseOver setting, as the map is full-screen
 	var keyboardControl = mapObject.getControlsByClass("FacilMap.Control.KeyboardDefaults")[0];
@@ -33,10 +30,10 @@ function initMap()
 		keyboardControl.deactivate();
 		mapObject.removeControl(keyboardControl);
 	}
-	mapObject.addControl(new FacilMap.Control.KeyboardDefaults({ onlyOnMouseOver : false }));
+	mapObject.addControl(new fm.Control.KeyboardDefaults({ onlyOnMouseOver : false }));
 
 	mapObject.addAllAvailableLayers();
-	mapObject.addLayer(new FacilMap.Layer.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
+	mapObject.addLayer(new fm.Layer.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
 
 	var activeTool = null;
 	var cookies = document.cookie.split(/;\s*/);
@@ -50,26 +47,26 @@ function initMap()
 		}
 	}
 
-	var toolbar = new OpenLayers.Control.Panel();
-	var moveControl = new OpenLayers.Control({ title : _("Move map") });
+	var toolbar = new ol.Control.Panel();
+	var moveControl = new ol.Control({ title : ol.i18n("Move map") });
 	mapObject.addControl(moveControl);
 	toolbar.addControls(moveControl);
 	toolbar.defaultControl = moveControl;
 
 	for(var i=0; i<mapObject.layers.length; i++)
 	{
-		if(mapObject.layers[i] instanceof FacilMap.Layer.Markers.OpenStreetBugs)
+		if(mapObject.layers[i] instanceof fm.Layer.Markers.OpenStreetBugs)
 		{
-			var osbControl = new OpenLayers.Control.OpenStreetBugs(mapObject.layers[i]);
+			var osbControl = new ol.Control.OpenStreetBugs(mapObject.layers[i]);
 			mapObject.addControl(osbControl);
 			toolbar.addControls(osbControl);
 			break;
 		}
 	}
 
-	var layerMarkers = new FacilMap.Layer.Markers.LonLat(_("Markers"), { shortName : "m", saveInPermalink : true });
+	var layerMarkers = new fm.Layer.Markers.LonLat(ol.i18n("Markers"), { shortName : "m", saveInPermalink : true });
 	mapObject.addLayer(layerMarkers);
-	var markerControl = new FacilMap.Control.CreateMarker(layerMarkers);
+	var markerControl = new fm.Control.CreateMarker(layerMarkers);
 	mapObject.addControl(markerControl);
 	toolbar.addControls(markerControl);
 
@@ -87,32 +84,34 @@ function initMap()
 	}
 
 	toolbar.activateControl = function(control) {
-		var ret = OpenLayers.Control.Panel.prototype.activateControl.apply(this, arguments);
+		var ret = ol.Control.Panel.prototype.activateControl.apply(this, arguments);
 
 		document.cookie = "fmTool="+encodeURIComponent(control.title)+";expires="+(new Date((new Date()).getTime() + 86400000000)).toGMTString();
 		return ret;
 	};
 	
-	mapObject.addControl(new FacilMap.Control.GeoLocation());
-	mapObject.addControl(new FacilMap.Control.Search({ permalinkName : "s" }));
-	mapObject.addControl(new FacilMap.Control.HistoryStateHandler({ autoActivate:true }));
+	mapObject.addControl(new fm.Control.GeoLocation());
+	mapObject.addControl(new fm.Control.Search({ permalinkName : "s" }));
+	mapObject.addControl(new fm.Control.HistoryStateHandler({ autoActivate:true }));
 
 	$(".olControlPanel").mouseover(
-		function(){ FacilMap.Util.changeOpacity(this, 1); }
+		function(){ fm.Util.changeOpacity(this, 1); }
 	).mouseout(
-		function(){ FacilMap.Util.changeOpacity(this, 0.5); }
+		function(){ fm.Util.changeOpacity(this, 0.5); }
 	).mouseout();
 }
 
 
-OpenLayers.Lang.en = OpenLayers.Util.extend(OpenLayers.Lang.en, {
+ol.Lang.en = ol.Util.extend(ol.Lang.en, {
 	"Move map" : "Move map",
 	"OpenStreetBugs" : "OpenStreetBugs",
 	"Markers" : "Markers"
 });
 
-OpenLayers.Lang.de = OpenLayers.Util.extend(OpenLayers.Lang.de, {
+ol.Lang.de = ol.Util.extend(ol.Lang.de, {
 	"Move map" : "Karte verschieben",
 	"OpenStreetBugs" : "OpenStreetBugs",
 	"Markers" : "Marker"
 });
+
+})(FacilMap, OpenLayers, FacilMap.$);

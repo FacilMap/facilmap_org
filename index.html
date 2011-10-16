@@ -72,7 +72,6 @@
 			#pb-list li.loaded:after { content:" ✔"; font-weight:bold; }
 		</style>
 		<link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="FacilMap Beta" />
-		<link rel="stylesheet" type="text/css" href="jquery-ui-1.8.7.custom.css" />
 		<link rel="favorite icon" type="image/png" href="favicon.png" />
 	</head>
 	<body>
@@ -200,16 +199,6 @@
 					loaded : function() { return window.AjaxProxyXMLHttpRequest != undefined; },
 					url : "http://api.facilmap.org/ajax-proxy/ajax-proxy.js"
 				},
-				"jQuery" : {
-					loaded : function() { return window.jQuery != undefined; },
-					url : "jquery-1.4.4.min.js"
-				},
-				"jQueryUI" : {
-					loaded : function() { return window.jQuery != undefined && window.jQuery.prototype.dialog != undefined; },
-					depends : [ "jQuery" ],
-					url : "jquery-ui-1.8.7.custom.min.js",
-					title : "jQuery UI"
-				},
 				"map" : {
 					loaded : function() { return window.initMap != undefined; },
 					depends : [ "OpenLayers", "FacilMap" ],
@@ -269,8 +258,8 @@
 				{
 					mapInit = true;
 					initMap();
-					$("#search-input").focus();
-					$("#pb").css("display", "none");
+					FacilMap.$(".olMap .fmControlSearch .from").focus();
+					FacilMap.$("#pb").css("display", "none");
 				}
 			};
 
