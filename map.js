@@ -107,7 +107,7 @@ window.initMap = function()
 		return obj;
 	};
 	historyStateHandler.stateHandler.setState = function(obj) {
-		if(obj.c && obj.c.s && obj.c.s.query != null)
+		if(obj && obj.c && obj.c.s && obj.c.s.query != null)
 		{
 			obj.q = obj.c.s.query;
 			delete obj.c.s.query;
