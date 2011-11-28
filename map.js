@@ -102,7 +102,9 @@ window.initMap = function()
 			if(!obj.c) obj.c = { };
 			if(!obj.c.s) obj.c.s = { };
 			obj.c.s.query = obj.q;
-			delete obj.q
+			if(obj.lon == undefined && obj.lat == undefined && obj.zoom == undefined)
+				obj.c.s.zoom = "1";
+			delete obj.q;
 		}
 		return obj;
 	};
