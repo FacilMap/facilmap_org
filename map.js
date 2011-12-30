@@ -92,17 +92,8 @@ window.initMap = function()
 	
 	mapObject.addControl(new fm.Control.GeoLocation());
 	mapObject.addControl(new fm.Control.Search({ permalinkName : "s" }));
-	
-	var layerSwitcher = mapObject.getControlsByClass("FacilMap.Control.LayerSwitcher")[0];
-	if(layerSwitcher)
-	{
-		mapObject.removeControl(layerSwitcher);
-		layerSwitcher.destroy();
-	}
-	
-	var tools = new FacilMap.Control.ToolsMenu();
-	mapObject.addControl(tools);
-	tools.addLayerSwitcher(ol.i18n("Layers"));
+
+	mapObject.addControl(new FacilMap.Control.ToolsMenu.Default());
 	
 	var historyStateHandler = new fm.Control.HistoryStateHandler({ autoActivate: true, prefixWithMapId: false });
 	// Patch q parameter for searching
@@ -142,15 +133,13 @@ window.initMap = function()
 ol.Lang.en = ol.Util.extend(ol.Lang.en, {
 	"Move map" : "Move map",
 	"OpenStreetBugs" : "OpenStreetBugs",
-	"Markers" : "Markers",
-	"Layers" : "Layers"
+	"Markers" : "Markers"
 });
 
 ol.Lang.de = ol.Util.extend(ol.Lang.de, {
 	"Move map" : "Karte verschieben",
 	"OpenStreetBugs" : "OpenStreetBugs",
-	"Markers" : "Marker",
-	"Layers" : "Karten"
+	"Markers" : "Marker"
 });
 
 })(FacilMap, OpenLayers, FacilMap.$);
