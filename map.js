@@ -133,7 +133,7 @@ window.initMap = function()
 	};
 	mapObject.addControl(historyStateHandler);
 	
-	$("olMap .fmControlSearch .from").attr("name", "q");
+	$(".olMap .fmControlSearch .from").attr("name", "q");
 
 	$(".olControlPanel").mouseover(
 		function(){ fm.Util.changeOpacity(this, 1); }
