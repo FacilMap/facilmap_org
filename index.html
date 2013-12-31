@@ -180,18 +180,13 @@
 			};
 
 			var libs = {
-				"OpenLayers" : {
-					loaded : function() { return window.OpenLayers != undefined; },
-					url : "OpenLayers-2.13.1/OpenLayers.js"
-				},
-				"FacilMap" : {
+				"FacilMap + OpenLayers" : {
 					loaded : function() { return window.FacilMap != undefined; },
-					depends : [ "OpenLayers" ],
-					url : "api/facilmap_src.js"
+					url : "api/facilmap_ol.js"
 				},
 				"osbLayer" : {
 					loaded : function() { return window.OpenLayers != undefined && OpenLayers.Layer.OpenStreetBugs != undefined },
-					depends : [ "OpenLayers" ],
+					depends : [ "FacilMap + OpenLayers" ],
 					url : "http://api.facilmap.org/osblayer/osblayer.js",
 					title : "OpenStreetBugs layer"
 				},
@@ -201,7 +196,7 @@
 				},
 				"map" : {
 					loaded : function() { return window.initMap != undefined; },
-					depends : [ "OpenLayers", "FacilMap" ],
+					depends : [ "FacilMap + OpenLayers" ],
 					url : "map.js",
 					title : "facilmap.org scripts"
 				}
