@@ -103,7 +103,15 @@ window.initMap = function()
 		{
 			if(!obj.c) obj.c = { };
 			if(!obj.c.s) obj.c.s = { };
-			obj.c.s.query = obj.q;
+
+			var q = (""+obj.q).split(/\s+to\s+/i, 2);
+			if(q.length == 1)
+				obj.c.s.query = q[0];
+			else {
+				obj.c.s.from = q[0];
+				obj.c.s.to = q[1];
+			}
+
 			if(obj.lon == undefined && obj.lat == undefined && obj.zoom == undefined)
 				obj.c.s.zoom = "1";
 			delete obj.q;
@@ -111,10 +119,15 @@ window.initMap = function()
 		return obj;
 	};
 	historyStateHandler.stateHandler.setState = function(obj) {
-		if(obj && obj.c && obj.c.s && obj.c.s.query != null)
-		{
-			obj.q = obj.c.s.query;
-			delete obj.c.s.query;
+		if(obj && obj.c && obj.c.s) {
+			if(obj.c.s.query != null) {
+				obj.q = obj.c.s.query;
+				delete obj.c.s.query;
+			} else if(obj.c.s.from != null && obj.c.s.to != null) {
+				obj.q = obj.c.s.from+" to "+obj.c.s.to;
+				delete obj.c.s.from;
+				delete obj.c.s.to;
+			}
 		}
 		fm.HistoryStateHandler.prototype.setState.apply(this, [ obj ]);
 	};
