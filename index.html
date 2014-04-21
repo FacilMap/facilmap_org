@@ -187,12 +187,12 @@
 				"osbLayer" : {
 					loaded : function() { return window.OpenLayers != undefined && OpenLayers.Layer.OpenStreetBugs != undefined },
 					depends : [ "FacilMap + OpenLayers" ],
-					url : "http://api.facilmap.org/osblayer/osblayer.js",
+					url : "https://api.facilmap.org/osblayer/osblayer.js",
 					title : "OpenStreetBugs layer"
 				},
 				"ajax-proxy" : {
 					loaded : function() { return window.AjaxProxyXMLHttpRequest != undefined; },
-					url : "http://api.facilmap.org/ajax-proxy/ajax-proxy.js"
+					url : "https://api.facilmap.org/ajax-proxy/ajax-proxy.js"
 				},
 				"map" : {
 					loaded : function() { return window.initMap != undefined; },
