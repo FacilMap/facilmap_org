@@ -47,49 +47,6 @@ window.initMap = function()
 		}
 	}
 
-	var toolbar = new ol.Control.Panel();
-	var moveControl = new ol.Control({ title : ol.i18n("Move map") });
-	mapObject.addControl(moveControl);
-	toolbar.addControls(moveControl);
-	toolbar.defaultControl = moveControl;
-
-	for(var i=0; i<mapObject.layers.length; i++)
-	{
-		if(mapObject.layers[i] instanceof fm.Layer.Markers.OpenStreetBugs)
-		{
-			var osbControl = new ol.Control.OpenStreetBugs(mapObject.layers[i]);
-			mapObject.addControl(osbControl);
-			toolbar.addControls(osbControl);
-			break;
-		}
-	}
-
-	var layerMarkers = new fm.Layer.Markers.LonLat(ol.i18n("Markers"), { shortName : "m", saveInPermalink : true });
-	mapObject.addLayer(layerMarkers);
-	var markerControl = new fm.Control.CreateMarker(layerMarkers);
-	mapObject.addControl(markerControl);
-	toolbar.addControls(markerControl);
-
-	mapObject.addControl(toolbar);
-	if(activeTool)
-	{
-		for(var i=0; i<toolbar.controls.length; i++)
-		{
-			if(toolbar.controls[i].title == activeTool)
-			{
-				toolbar.activateControl(toolbar.controls[i]);
-				break;
-			}
-		}
-	}
-
-	toolbar.activateControl = function(control) {
-		var ret = ol.Control.Panel.prototype.activateControl.apply(this, arguments);
-
-		document.cookie = "fmTool="+encodeURIComponent(control.title)+";expires="+(new Date((new Date()).getTime() + 86400000000)).toGMTString();
-		return ret;
-	};
-	
 	mapObject.addControl(new fm.Control.GeoLocation());
 	mapObject.addControl(new fm.Control.Search({ permalinkName : "s" }));
 
