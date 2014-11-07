@@ -61,12 +61,14 @@ window.initMap = function()
 			if(!obj.c) obj.c = { };
 			if(!obj.c.s) obj.c.s = { };
 
-			var q = (""+obj.q).split(/\s+to\s+/i, 2);
-			if(q.length == 1)
-				obj.c.s.query = q[0];
-			else {
-				obj.c.s.from = q[0];
-				obj.c.s.to = q[1];
+			if(typeof obj.q == "string") {
+				var q = obj.q.split(/\s+to\s+/i, 2);
+				if(q.length == 1)
+					obj.c.s.query = q[0];
+				else
+					obj.c.s.query = q;
+			} else {
+				obj.c.s.query = obj.q;
 			}
 
 			if(obj.lon == undefined && obj.lat == undefined && obj.zoom == undefined)
