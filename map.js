@@ -62,7 +62,7 @@ window.initMap = function()
 			if(!obj.c.s) obj.c.s = { };
 
 			if(typeof obj.q == "string") {
-				var q = obj.q.split(/\s+to\s+/i, 2);
+				var q = obj.q.split(/\s+to\s+/i);
 				if(q.length == 1)
 					obj.c.s.query = q[0];
 				else
