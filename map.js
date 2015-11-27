@@ -33,7 +33,7 @@ window.initMap = function()
 	mapObject.addControl(new fm.Control.KeyboardDefaults({ onlyOnMouseOver : false }));
 
 	mapObject.addAllAvailableLayers();
-	mapObject.addLayer(new fm.Layer.CoordinateGrid(null, { visibility: false, shortName: "grid" }));
+	mapObject.addLayer(new fm.Layer.CoordinateGrid(null, { visibility: false, permalinkName: "grid" }));
 
 	var activeTool = null;
 	var cookies = document.cookie.split(/;\s*/);
